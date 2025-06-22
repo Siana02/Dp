@@ -907,7 +907,285 @@ html, body {
     font-size: 1.3em; width: 38px; height: 38px;
   }
 }
+/* === Projects: Track Your Goals Section === */
+#projects-overview {
+  margin-bottom: 2.5rem;
+}
+#projects-overview-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #b39ddb;
+  margin-bottom: 1.2em;
+  font-family: 'Quicksand', 'Playfair Display', Arial, sans-serif;
+}
+.projects-goals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.1rem;
+}
+@media (max-width: 700px) {
+  .projects-goals-grid {
+    grid-template-columns: 1fr;
+    gap: 1.1rem;
+  }
+}
+/* Widget styles */
+.project-goal-widget {
+  background: var(--color-card, #fff);
+  border-radius: var(--radius-card, 18px);
+  box-shadow: 0 2px 18px #b39ddb14;
+  padding: 1.4em 1.1em 1.2em 1.1em;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: box-shadow 0.24s, background 0.2s;
+  position: relative;
+}
+.project-goal-widget:hover {
+  box-shadow: 0 6px 24px var(--project-color, #b39ddb44);
+  background: rgba(250,248,252,0.86);
+}
+.pgw-main {
+  display: flex;
+  align-items: center;
+  gap: 1.1em;
+  margin-bottom: 0.6em;
+}
+.pgw-emoji {
+  font-size: 2.1em;
+  margin-right: 0.2em;
+}
+.pgw-title {
+  font-weight: 700;
+  font-size: 1.13em;
+  color: var(--project-color);
+  flex: 1 1 0;
+  letter-spacing: 0.01em;
+}
+.pgw-expand {
+  background: none;
+  border: none;
+  color: var(--project-color);
+  font-size: 1.5em;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0.13em 0.19em;
+  margin-right: 0.2em;
+  transition: background 0.16s;
+}
+.pgw-expand:focus,
+.pgw-expand:hover {
+  background: #f3e5f5;
+  outline: none;
+}
+.pgw-meter {
+  position: relative;
+  width: 54px;
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.6em;
+  user-select: none;
+}
+.pgw-meter canvas {
+  width: 54px; height: 54px;
+  display: block;
+}
+.pgw-meter .pgw-percent {
+  position: absolute;
+  left: 0; right: 0; top: 0; bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.01em;
+  font-weight: 600;
+  color: var(--project-color);
+  pointer-events: none;
+}
+@media (max-width: 700px) {
+  .pgw-meter, .pgw-meter canvas {
+    width: 100px; height: 16px;
+  }
+  .pgw-meter canvas { border-radius: 1em;}
+  .pgw-meter .pgw-percent { font-size: 0.97em;}
+}
+/* Dropdown */
+.pgw-dropdown {
+  background: #f4f0fa;
+  border-radius: var(--radius, 14px);
+  margin-top: 0.7em;
+  padding: 1em 1.2em 1.2em 1.2em;
+  box-shadow: 0 1px 8px #b39ddb18;
+  animation: fadeInDrop 0.31s;
+}
+@keyframes fadeInDrop {
+  from { opacity:0; transform: translateY(-10px);}
+  to { opacity:1; transform: none;}
+}
+.pgw-goals-list {
+  margin-bottom: 1em;
+}
+.pgw-goal-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85em;
+  padding: 0.7em 0.2em;
+  margin-bottom: 0.5em;
+  background: #fff8fd;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px #b39ddb08;
+  font-size: 1em;
+  font-weight: 500;
+  position: relative;
+}
+.pgw-goal-row .pgw-goal-desc {
+  flex: 1 1 0;
+  font-size: 1.01em;
+  color: #6d4caf;
+}
+.pgw-goal-row .pgw-goal-checklist {
+  display: flex;
+  align-items: center;
+  gap: 0.6em;
+}
+.pgw-goal-row .pgw-goal-progressbar {
+  width: 68px;
+  height: 8px;
+  background: #f3f3f3;
+  border-radius: 10px;
+  position: relative;
+  margin-left: 0.7em;
+  overflow: hidden;
+}
+.pgw-goal-row .pgw-goal-progressbar .pgw-goal-progress {
+  height: 100%;
+  background: var(--project-color);
+  border-radius: 10px;
+  transition: width 0.5s cubic-bezier(.5,0,.35,1);
+}
+.pgw-goal-row .pgw-goal-target {
+  margin-left: 0.6em;
+  color: #888;
+  font-size: 0.98em;
+}
+.pgw-goal-row .pgw-goal-history-tip {
+  font-size: 0.93em;
+  color: #bdbdbd;
+  margin-left: 1.1em;
+  cursor: default;
+}
+.pgw-no-goal-msg {
+  color: #b39ddb;
+  font-size: 1.07em;
+  margin: 1.1em 0;
+  text-align: center;
+  animation: pulseMsg 1.5s infinite alternate;
+}
+@keyframes pulseMsg {
+  from { opacity: 0.7; }
+  to { opacity: 1;}
+}
+.pgw-add-goal {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  background: #fcb6b6;
+  color: #fff;
+  border: none;
+  border-radius: 2em;
+  padding: 0.55em 1.3em;
+  font-size: 1.08em;
+  font-weight: 600;
+  margin: 0.5em 0 0 0;
+  box-shadow: 0 1px 12px #fcb6b615;
+  cursor: pointer;
+  transition: background 0.16s, box-shadow 0.16s;
+  outline: none;
+  animation: pulseBtn 1.2s infinite alternate;
+}
+@keyframes pulseBtn {
+  from { box-shadow: 0 1px 12px #fcb6b615; }
+  to { box-shadow: 0 4px 18px #fcb6b633; }
+}
+.pgw-add-goal:focus, .pgw-add-goal:hover {
+  background: #b39ddb;
+  color: #fff;
+}
+.pgw-history {
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+  margin-top: 1.2em;
+  justify-content: center;
+}
+.pgw-history-label {
+  font-size: 0.98em;
+  color: #b39ddb;
+  font-weight: 500;
+}
+.pgw-history-prev, .pgw-history-next {
+  background: none;
+  border: none;
+  color: #b39ddb;
+  font-size: 1.25em;
+  border-radius: 50%;
+  transition: background 0.14s;
+  cursor: pointer;
+}
+.pgw-history-prev:focus, .pgw-history-next:focus,
+.pgw-history-prev:hover, .pgw-history-next:hover {
+  background: #b39ddb17;
+}
 
+/* Modal */
+.add-goal-modal {
+  position: fixed;
+  left:0; top:0; width:100vw; height:100vh;
+  background: rgba(179,157,219,0.17);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 111;
+}
+.add-goal-modal[hidden] { display: none !important;}
+.agm-content {
+  background: #fff8fd;
+  border-radius: 1.3em;
+  box-shadow: 0 8px 36px #b39ddb44, 0 1px 10px #b39ddb22;
+  padding: 2.1em 1.7em 1.4em 1.7em;
+  min-width: 310px;
+  max-width: 97vw;
+  font-family: 'Quicksand', 'Playfair Display', Arial, sans-serif;
+  position: relative;
+  animation: fadeZoomIn 0.3s;
+}
+.agm-content h3 { margin-top: 0; color: #b39ddb;}
+.agm-content label { display: block; margin-top: 1em; font-size:1.08em;}
+.agm-content input[type="text"], .agm-content input[type="number"], .agm-content input[type="month"] {
+  width: 100%; margin-top: 0.18em; margin-bottom: 0.6em;
+  padding: 0.6em 0.8em; border-radius: 10px; border: 1px solid #b39ddb;
+  background: #fff; font-size:1em;
+}
+.agm-close {
+  position: absolute; top: 1.1em; right: 1em;
+  background: none; border: none; font-size: 2em; color: #b39ddb; cursor: pointer;
+  opacity: 0.7; transition: opacity 0.18s;
+}
+.agm-close:hover { opacity: 1;}
+.agm-save {
+  background: #b39ddb;
+  color: #fff; border: none; padding:0.7em 1.6em; border-radius: 1em;
+  font-weight: 700; cursor: pointer; margin-top: 1.3em;
+  font-size: 1.07em;
+}
+.agm-save:focus, .agm-save:hover { background: #f48fb1;}
+@media (max-width:600px) {
+  .agm-content { min-width: 90vw; padding: 1.2em 0.5em 0.7em 0.5em; }
+}
+@media (max-width:600px) {
+  .project-goal-widget { padding: 0.8em 0.4em 0.8em 0.7em;}
+}
 
   #sidebar {
     position: fixed;
