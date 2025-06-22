@@ -926,6 +926,241 @@ window.openTaskModal = function(taskId, focusField, defaults) {
 
 // --- Initial Render ---
 renderTodaysTasks();
+
+// === Projects: Track Your Goals Section ===
+
+const PROJECTS = [
+  { name: "Work", color: "#b39ddb", emoji: "🟣" },
+  { name: "School", color: "#64b5f6", emoji: "💙" },
+  { name: "Personal", color: "#f48fb1", emoji: "💖" },
+  { name: "Other", color: "#81c784", emoji: "🍃" }
+];
+
+function loadGoals() {
+  return JSON.parse(localStorage.getItem('goals') || '[]');
+}
+function saveGoals(goals) {
+  localStorage.setItem('goals', JSON.stringify(goals));
+}
+// --- Meter Drawing ---
+function drawDonutMeter(canvas, percent, color) {
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.offsetWidth || 54;
+  const h = canvas.height = canvas.offsetHeight || 54;
+  ctx.clearRect(0, 0, w, h);
+  const r = w/2 - 7;
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = "#f3f3f3";
+  ctx.beginPath();
+  ctx.arc(w/2, h/2, r, 0, 2 * Math.PI);
+  ctx.stroke();
+  ctx.strokeStyle = color;
+  ctx.shadowColor = color+"88";
+  ctx.shadowBlur = 4;
+  ctx.beginPath();
+  ctx.arc(w/2, h/2, r, -Math.PI/2, -Math.PI/2 + 2*Math.PI*(percent/100), false);
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+}
+// --- Helper ---
+function getCurrentMonthYear() {
+  const now = new Date();
+  return { month: now.getMonth() + 1, year: now.getFullYear() };
+}
+function getMonthName(month) {
+  return new Date(2000, month-1, 1).toLocaleString(undefined, { month: 'long' });
+}
+// --- Calculate Progress ---
+function getGoalProgress(goal, tasks) {
+  if (goal.target && goal.target > 0) {
+    // Numeric target
+    const completed = tasks.filter(t =>
+      t.status === "completed" &&
+      t.project === goal.project &&
+      new Date(t.dueDate).getFullYear() === goal.year &&
+      new Date(t.dueDate).getMonth()+1 === goal.month
+    ).length;
+    return { percent: Math.min(100, Math.round(completed / goal.target * 100)), count: completed };
+  } else {
+    // Non-numeric: checklist
+    const completed = tasks.filter(t =>
+      t.status === "completed" &&
+      t.project === goal.project &&
+      new Date(t.dueDate).getFullYear() === goal.year &&
+      new Date(t.dueDate).getMonth()+1 === goal.month
+    );
+    return { percent: completed.length ? 100 : 0, count: completed.length, checklist: completed };
+  }
+}
+// --- Widget State ---
+let pgwOpen = { Work: false, School: false, Personal: false, Other: false };
+let pgwHistory = {
+  Work: { month: getCurrentMonthYear().month, year: getCurrentMonthYear().year },
+  School: { month: getCurrentMonthYear().month, year: getCurrentMonthYear().year },
+  Personal: { month: getCurrentMonthYear().month, year: getCurrentMonthYear().year },
+  Other: { month: getCurrentMonthYear().month, year: getCurrentMonthYear().year }
+};
+// --- Render All Widgets ---
+function renderProjectsOverview() {
+  const goals = loadGoals();
+  const tasks = loadTasks ? loadTasks() : [];
+  PROJECTS.forEach(proj => {
+    const widget = document.querySelector(`.project-goal-widget[data-project="${proj.name}"]`);
+    if (!widget) return;
+    // Main meter: aggregate current month's numeric goals
+    const { month, year } = getCurrentMonthYear();
+    const monthGoals = goals.filter(g => g.project === proj.name && g.month === month && g.year === year);
+    let bestPercent = 0;
+    let meterGoal = null;
+    monthGoals.forEach(goal => {
+      const prog = getGoalProgress(goal, tasks);
+      if (prog.percent > bestPercent) {
+        bestPercent = prog.percent;
+        meterGoal = goal;
+      }
+    });
+    // Draw donut meter (desktop)
+    const meter = widget.querySelector('.pgw-meter');
+    const canvas = meter.querySelector('canvas');
+    drawDonutMeter(canvas, bestPercent, proj.color);
+    meter.setAttribute('aria-valuenow', bestPercent);
+    meter.setAttribute('aria-valuemax', 100);
+    meter.setAttribute('aria-label', `${proj.name} project progress: ${bestPercent}% complete`);
+    meter.querySelector('.pgw-percent').textContent = bestPercent + "%";
+    // Dropdown
+    const dropdown = widget.querySelector('.pgw-dropdown');
+    dropdown.hidden = !pgwOpen[proj.name];
+    // Month/year label for dropdown history
+    const hist = pgwHistory[proj.name];
+    dropdown.querySelector('.pgw-history-label').textContent =
+      getMonthName(hist.month) + " " + hist.year;
+    // Goals for dropdown month
+    const monthGoalsDrop = goals.filter(g => g.project === proj.name && g.month === hist.month && g.year === hist.year);
+    const goalsList = dropdown.querySelector('.pgw-goals-list');
+    goalsList.innerHTML = "";
+    if (monthGoalsDrop.length === 0) {
+      dropdown.querySelector('.pgw-no-goal-msg .pgw-month').textContent = getMonthName(hist.month);
+      dropdown.querySelector('.pgw-no-goal-msg').hidden = false;
+    } else {
+      dropdown.querySelector('.pgw-no-goal-msg').hidden = true;
+      monthGoalsDrop.forEach(goal => {
+        const prog = getGoalProgress(goal, tasks);
+        const row = document.createElement('div');
+        row.className = "pgw-goal-row";
+        row.innerHTML = `
+          <span class="pgw-goal-desc">${goal.description}</span>
+          ${goal.target ?
+            `<span class="pgw-goal-progressbar"><span class="pgw-goal-progress" style="background:${proj.color};width:${prog.percent}%;"></span></span>
+            <span class="pgw-goal-target">${prog.count}/${goal.target}</span>
+            <span style="color:${proj.color};font-weight:600;">${prog.percent}%</span>`
+            :
+            `<span class="pgw-goal-checklist" title="Checklist of completed tasks for this goal">
+              <i data-lucide="check-circle" style="color:${proj.color};"></i> ${prog.count} task${prog.count===1?"":"s"} completed
+            </span>`
+          }
+          ${hist.month !== month || hist.year !== year ? `<span class="pgw-goal-history-tip" title="Goal history — cannot edit">History</span>` : ""}
+        `;
+        goalsList.appendChild(row);
+      });
+    }
+    // Add goal button: pulse if no goals for current month
+    const addGoalBtn = dropdown.querySelector('.pgw-add-goal');
+    if (monthGoalsDrop.length === 0 && hist.month === month && hist.year === year)
+      addGoalBtn.classList.add('pulse-btn');
+    else addGoalBtn.classList.remove('pulse-btn');
+    // Lucide icons
+    if (window.lucide) lucide.createIcons({icons: ["plus","chevron-left","chevron-right","check-circle"]});
+  });
+}
+// --- Dropdown Expand ---
+document.querySelectorAll('.pgw-expand').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const proj = btn.closest('.project-goal-widget').getAttribute('data-project');
+    pgwOpen[proj] = !pgwOpen[proj];
+    renderProjectsOverview();
+  });
+  btn.addEventListener('keypress', e => {
+    if (e.key === "Enter" || e.key === " ") btn.click();
+  });
+});
+// --- Month/Year History ---
+document.querySelectorAll('.pgw-history-prev').forEach(btn => {
+  btn.onclick = () => {
+    const proj = btn.closest('.project-goal-widget').getAttribute('data-project');
+    const hist = pgwHistory[proj];
+    if (hist.month > 1) hist.month--;
+    else { hist.month = 12; hist.year--; }
+    renderProjectsOverview();
+  };
+});
+document.querySelectorAll('.pgw-history-next').forEach(btn => {
+  btn.onclick = () => {
+    const proj = btn.closest('.project-goal-widget').getAttribute('data-project');
+    const hist = pgwHistory[proj];
+    const now = getCurrentMonthYear();
+    if (hist.month < 12 && (hist.year < now.year || (hist.year === now.year && hist.month < now.month))) hist.month++;
+    else if (hist.year < now.year) { hist.month = 1; hist.year++; }
+    renderProjectsOverview();
+  };
+});
+// --- Add Goal Modal ---
+let addGoalContext = null;
+document.querySelectorAll('.pgw-add-goal').forEach(btn => {
+  btn.onclick = () => {
+    const proj = btn.closest('.project-goal-widget').getAttribute('data-project');
+    openAddGoalModal(proj);
+  };
+  btn.addEventListener('keypress', e => { if (e.key === "Enter" || e.key === " ") btn.click();});
+});
+function openAddGoalModal(project) {
+  const modal = document.getElementById('add-goal-modal');
+  const form = modal.querySelector('form');
+  form.reset();
+  form.project.value = project;
+  const now = new Date();
+  form.monthyear.value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}`;
+  modal.hidden = false;
+  setTimeout(() => modal.querySelector('input[name="description"]').focus(), 50);
+  addGoalContext = project;
+}
+document.querySelector('.agm-close').onclick = () => {
+  document.getElementById('add-goal-modal').hidden = true;
+};
+// Modal submit
+document.querySelector('#add-goal-modal form').onsubmit = function(e) {
+  e.preventDefault();
+  const form = this;
+  const desc = form.description.value.trim();
+  const target = form.target.value ? Number(form.target.value) : null;
+  const [yr, mo] = form.monthyear.value.split('-');
+  const project = form.project.value;
+  if (!desc || !yr || !mo || !project) return;
+  const goal = {
+    id: crypto.randomUUID(),
+    project,
+    description: desc,
+    target,
+    month: Number(mo),
+    year: Number(yr),
+    createdAt: new Date().toISOString()
+  };
+  const goals = loadGoals();
+  goals.push(goal);
+  saveGoals(goals);
+  document.getElementById('add-goal-modal').hidden = true;
+  pgwHistory[project] = { month: goal.month, year: goal.year };
+  pgwOpen[project] = true;
+  renderProjectsOverview();
+};
+// Keyboard nav: escape closes modal
+document.getElementById('add-goal-modal').addEventListener('keydown', e => {
+  if (e.key === "Escape") document.getElementById('add-goal-modal').hidden = true;
+});
+// --- Initial Render ---
+renderProjectsOverview();
+// Re-render after tasks/goals update
+window.renderProjectsOverview = renderProjectsOverview;
 // ---- PWA Essentials: Service Worker Registration ----
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
