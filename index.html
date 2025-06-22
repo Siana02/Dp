@@ -48,6 +48,50 @@
     </div>
   </div>
 </div>
+        <!-- Insert after the dashboard topbar, before .dashboard-cards in your #dashboard section -->
+<div class="reminders-deadlines-split">
+  <!-- LEFT: Reminders & Past Deadlines -->
+  <div class="reminders-left">
+    <div class="reminders-header">
+      <span class="reminders-anim-text">
+        <span class="reminders-lead" style="color:#b39ddb;">Finish up these</span>
+        <span class="reminders-pending" style="color:#ec407a;">pending tasks</span>
+        <span class="reminders-dots" aria-hidden="true">
+          <span>.</span><span>.</span><span>.</span>
+        </span>
+      </span>
+      <button class="reminders-toggle" id="toggle-past-tasks" aria-label="Show Past Tasks">
+        <i data-lucide="history"></i>
+        <span class="toggle-label">Show Past Tasks</span>
+      </button>
+    </div>
+    <ul class="reminders-list" id="reminders-list">
+      <!-- Overdue tasks dynamically inserted here -->
+    </ul>
+    <div class="past-deadlines-widget" id="past-deadlines" hidden>
+      <h4>Past Deadlines</h4>
+      <ul class="past-tasks-list" id="past-tasks-list">
+        <!-- Archived/past tasks dynamically inserted here -->
+      </ul>
+    </div>
+  </div>
+  <!-- RIGHT: Weekly Performance -->
+  <div class="reminders-right">
+    <div class="performance-widget">
+      <h4>This Week’s Performance</h4>
+      <div class="performance-bar-outer">
+        <div class="performance-bar-inner" id="performance-bar"></div>
+      </div>
+      <div class="performance-label" id="performance-label">
+        <!-- e.g., "5 of 10 tasks complete (50%)" -->
+      </div>
+    </div>
+  </div>
+  <!-- Snackbar for Undo -->
+  <div id="snackbar" class="snackbar" role="status" aria-live="polite" hidden>
+    Task archived. <button id="undo-archive">Undo</button>
+  </div>
+</div>
         <div class="dashboard-cards">
           <div class="card today-overview"></div>
           <div class="card week-overview"></div>
