@@ -669,7 +669,263 @@ else {
   lucideScript.onload = () => lucide.createIcons();
   document.head.appendChild(lucideScript);
 }
+// === Today’s Tasks Section Logic ===
 
+// --- Utility Functions ---
+function isToday(dateStr) {
+  const today = new Date();
+  const date = new Date(dateStr);
+  return date.getFullYear() === today.getFullYear() &&
+    date.getMonth() === today.getMonth() &&
+    date.getDate() === today.getDate();
+}
+function importanceToOrder(importance) {
+  return { high: 0, medium: 1, low: 2 }[importance] ?? 3;
+}
+function importanceToColor(importance) {
+  return importance === "high" ? "red"
+       : importance === "medium" ? "blue"
+       : "green";
+}
+function projectColor(project) {
+  return {
+    Work: "#9575cd",
+    School: "#00bcd4",
+    Personal: "#f48fb1",
+    Other: "#90a4ae"
+  }[project] || "#bdbdbd";
+}
+
+// --- State ---
+let activeProjectFilter = null;
+let lastDeletedTask = null;
+
+// --- Rendering ---
+function renderTodaysTasks() {
+  const allTasks = loadTasks().filter(t => t.status !== "archived");
+  const todayTasks = allTasks.filter(t => isToday(t.dueDate));
+  let filtered = todayTasks;
+  if (activeProjectFilter) {
+    filtered = filtered.filter(t => t.project === activeProjectFilter);
+    document.getElementById('project-filter-bar').hidden = false;
+    document.getElementById('active-project-tag').textContent = activeProjectFilter;
+    document.getElementById('active-project-tag').style.background = projectColor(activeProjectFilter);
+  } else {
+    document.getElementById('project-filter-bar').hidden = true;
+  }
+  // Sort: importance (high>med>low), then by createdAt desc
+  filtered.sort((a, b) => {
+    const imp = importanceToOrder(a.importance) - importanceToOrder(b.importance);
+    if (imp !== 0) return imp;
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
+  const completed = filtered.filter(t => t.status === "completed");
+  const pending = filtered.filter(t => t.status !== "completed");
+  const list = document.getElementById('todays-tasks-list');
+  list.innerHTML = "";
+  let tasksRendered = 0;
+
+  // Helper to render a task card
+  function renderCard(task) {
+    const li = document.createElement('li');
+    li.className = "todays-tasks-card" + (task.status === "completed" ? " completed" : "");
+    li.tabIndex = 0;
+    // Bookmark
+    const color = importanceToColor(task.importance);
+    const importanceLabel =
+      task.importance === "high" ? "High importance"
+      : task.importance === "medium" ? "Medium importance"
+      : "Easy importance";
+    li.innerHTML = `
+      <div class="bookmark ${color}" title="${importanceLabel}" aria-label="${importanceLabel} task"></div>
+      <div class="todays-tasks-checkbox${task.status === "completed" ? " checked" : ""}" tabindex="0" role="checkbox" aria-checked="${task.status === "completed" ? "true" : "false"}" aria-label="Mark task ${
+        task.status === "completed" ? "incomplete" : "complete"
+      }">
+        <span class="checkmark"><i data-lucide="check"></i></span>
+      </div>
+      <div class="card-content">
+        <div class="todays-tasks-title">${task.title}</div>
+        <div class="todays-tasks-tags">
+          <span class="todays-tasks-tag" tabindex="0" aria-label="Filter by project ${task.project}" style="background:${projectColor(task.project)};color:#fff;">${task.project}</span>
+        </div>
+      </div>
+      <div class="todays-tasks-actions">
+        <button class="todays-tasks-trash" aria-label="Delete task"><i data-lucide="trash-2"></i></button>
+      </div>
+    `;
+    // Checkbox
+    const checkbox = li.querySelector('.todays-tasks-checkbox');
+    function toggleComplete(ev) {
+      ev.stopPropagation();
+      const tasks = loadTasks();
+      const idx = tasks.findIndex(t => t.id === task.id);
+      if (idx >= 0) {
+        tasks[idx].status = tasks[idx].status === "completed" ? "pending" : "completed";
+        saveTasks(tasks);
+        renderTodaysTasks();
+        renderRemindersAndPerformance?.();
+      }
+    }
+    checkbox.addEventListener('click', toggleComplete);
+    checkbox.addEventListener('keypress', e => { if (e.key === "Enter" || e.key === " ") toggleComplete(e); });
+    // Tooltip for completed
+    if (task.status === "completed") {
+      checkbox.title = "Mark as incomplete";
+    }
+    // Trash
+    li.querySelector('.todays-tasks-trash').onclick = ev => {
+      ev.stopPropagation();
+      deleteTask(task.id, li);
+    };
+    // Card click for edit
+    li.addEventListener('click', (e) => {
+      if (
+        !e.target.classList.contains('todays-tasks-checkbox') &&
+        !e.target.closest('.todays-tasks-checkbox') &&
+        !e.target.classList.contains('todays-tasks-trash') &&
+        !e.target.closest('.todays-tasks-trash')
+      ) {
+        openTaskModal(task.id);
+      }
+    });
+    // Project tag filter
+    const tag = li.querySelector('.todays-tasks-tag');
+    tag.onclick = e => {
+      e.stopPropagation();
+      setProjectFilter(task.project);
+    };
+    tag.onkeypress = e => { if (e.key === "Enter" || e.key === " ") setProjectFilter(task.project); };
+    list.appendChild(li);
+    tasksRendered++;
+  }
+
+  pending.forEach(renderCard);
+  completed.forEach(renderCard);
+
+  // Empty state
+  document.getElementById('todays-tasks-empty').hidden = tasksRendered > 0;
+  if (window.lucide) lucide.createIcons();
+}
+
+// --- Project Filter Logic ---
+function setProjectFilter(proj) {
+  activeProjectFilter = proj;
+  renderTodaysTasks();
+}
+const clearBtn = document.getElementById('clear-project-filter');
+if (clearBtn) clearBtn.onclick = () => {
+  activeProjectFilter = null;
+  renderTodaysTasks();
+};
+
+// --- Delete (Soft-delete with Snackbar Undo) ---
+function deleteTask(taskId, li) {
+  const tasks = loadTasks();
+  const idx = tasks.findIndex(t => t.id === taskId);
+  if (idx === -1) return;
+  lastDeletedTask = { ...tasks[idx] };
+  tasks[idx].status = "archived";
+  saveTasks(tasks);
+  li.classList.add('archiving');
+  setTimeout(() => {
+    renderTodaysTasks();
+    showSnackbar("Task deleted.", undoDeleteTask);
+  }, 500);
+}
+function undoDeleteTask() {
+  if (!lastDeletedTask) return;
+  const tasks = loadTasks();
+  const idx = tasks.findIndex(t => t.id === lastDeletedTask.id);
+  if (idx !== -1) {
+    tasks[idx].status = "pending";
+    saveTasks(tasks);
+    renderTodaysTasks();
+    lastDeletedTask = null;
+  }
+}
+
+// --- Add Task FAB ---
+const fab = document.getElementById('fab-add-task');
+if (fab) {
+  fab.onclick = () => {
+    openTaskModal(null, null, { dueDate: (new Date()).toISOString().slice(0,10), project: "Personal", importance: "medium" });
+  };
+}
+
+// --- Hide FAB when modal open ---
+const observer = new MutationObserver(() => {
+  const modal = document.getElementById('edit-task-modal');
+  if (fab) fab.hidden = modal && modal.style.display === "flex";
+});
+observer.observe(document.body, { childList: true, subtree: true });
+
+// --- Extend openTaskModal for new tasks ---
+const origOpenTaskModal = window.openTaskModal;
+window.openTaskModal = function(taskId, focusField, defaults) {
+  if (taskId == null && defaults) {
+    let modal = document.getElementById('edit-task-modal');
+    if (!modal) origOpenTaskModal();
+    modal = document.getElementById('edit-task-modal');
+    const form = modal.querySelector('form');
+    form.title.value = "";
+    form.dueDate.value = defaults.dueDate || "";
+    form.importance.value = defaults.importance || "medium";
+    form.project.value = defaults.project || "Personal";
+    // Show modal
+    modal.style.display = "flex";
+    setTimeout(() => modal.classList.add("active"), 10);
+    form.title.focus();
+    form.onsubmit = (e) => {
+      e.preventDefault();
+      const tasks = loadTasks();
+      tasks.push({
+        id: crypto.randomUUID(),
+        title: form.title.value,
+        dueDate: form.dueDate.value,
+        importance: form.importance.value,
+        project: form.project.value,
+        status: "pending",
+        createdAt: new Date().toISOString()
+      });
+      saveTasks(tasks);
+      closeTaskModal();
+      renderTodaysTasks();
+      renderRemindersAndPerformance?.();
+    };
+    form.querySelector('.archive-btn').onclick = (e) => {
+      e.preventDefault();
+      closeTaskModal();
+    };
+    modal.querySelector('.close-modal').onclick = closeTaskModal;
+    modal.onclick = (e) => { if (e.target === modal) closeTaskModal(); };
+    return;
+  } else {
+    origOpenTaskModal(taskId, focusField);
+    // Re-render when editing existing
+    const modal = document.getElementById('edit-task-modal');
+    if (modal) {
+      const form = modal.querySelector('form');
+      form.onsubmit = (e) => {
+        e.preventDefault();
+        const tasks = loadTasks();
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          task.title = form.title.value;
+          task.dueDate = form.dueDate.value;
+          task.importance = form.importance.value;
+          task.project = form.project.value;
+          saveTasks(tasks);
+          closeTaskModal();
+          renderTodaysTasks();
+          renderRemindersAndPerformance?.();
+        }
+      };
+    }
+  }
+};
+
+// --- Initial Render ---
+renderTodaysTasks();
 // ---- PWA Essentials: Service Worker Registration ----
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
