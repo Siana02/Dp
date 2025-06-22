@@ -94,14 +94,32 @@
     Task archived. <button id="undo-archive">Undo</button>
   </div>
 </div>
-        <div class="dashboard-cards">
-          <div class="card today-overview"></div>
-          <div class="card week-overview"></div>
-          <div class="card active-projects"></div>
-          <div class="card completed-projects"></div>
-        </div>
       </section>
-      
+      <!-- TODAY'S TASKS SECTION -->
+<section id="todays-tasks-section" aria-labelledby="todays-tasks-title">
+  <div class="todays-tasks-header">
+    <h2 id="todays-tasks-title">Today’s Tasks</h2>
+    <div id="project-filter-bar" class="project-filter-bar" hidden>
+      <span id="current-project-filter"></span>
+      <button id="clear-project-filter" class="clear-filter-btn" aria-label="Clear project filter">Clear Filter</button>
+    </div>
+  </div>
+  <div class="todays-tasks-list-wrapper">
+    <ul id="todays-tasks-list" class="todays-tasks-list" aria-live="polite" aria-label="Tasks due today">
+      <!-- Task cards will be rendered here -->
+    </ul>
+    <div id="todays-tasks-empty" class="todays-tasks-empty" hidden>
+      <div class="empty-msg">
+        <span class="empty-emoji">🎉</span>
+        <span>You’ve cleared your plate for today!</span>
+      </div>
+    </div>
+  </div>
+  <!-- Floating Add Task FAB -->
+  <button id="add-task-fab" class="fab todays-fab" aria-label="Add new task">
+    <i data-lucide="plus"></i>
+  </button>
+</section>
       <!-- PROJECT MANAGER -->
       <section id="projects" class="page-section" aria-labelledby="projects-title" hidden>
         <header>
