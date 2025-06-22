@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Digital Planner App</title>
+  <link rel="manifest" href="/manifest.json"/>
+  <!-- Include any PWA/Meta tags needed -->
+  <!-- Assume CSS resets and theme styles will be included later -->
+</head>
+<body>
+  <!-- Theme/Mode Switcher and Layout Dragger (fixed/floating for global access) -->
+  <div id="ui-controls">
+    <button id="theme-switcher" aria-label="Switch Theme"></button>
+    <button id="layout-dragger" aria-label="Change Layout"></button>
+  </div>
+  <div id="app-container">
+    <!-- Sidebar / Tab Nav -->
+    <nav id="sidebar" aria-label="Main Navigation">
+      <ul>
+        <li><button data-section="dashboard" aria-label="Dashboard"><span>🏠</span> Dashboard</button></li>
+        <li><button data-section="projects" aria-label="Projects"><span>📁</span> Projects</button></li>
+        <li><button data-section="calendar" aria-label="Calendar"><span>📅</span> Calendar</button></li>
+        <li><button data-section="notes" aria-label="Notes"><span>📝</span> Notes & Docs</button></li>
+        <li><button data-section="focus" aria-label="Focus"><span>🎯</span> Focus</button></li>
+      </ul>
+    </nav>
+    <!-- Main Content Area -->
+    <main id="main-content">
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="page-section" aria-labelledby="dashboard-title">
+        <header>
+          <h1 id="dashboard-title">Dashboard</h1>
+          <div id="date-overview"></div>
+        </header>
+        <div class="dashboard-cards">
+          <div class="card today-overview"></div>
+          <div class="card week-overview"></div>
+          <div class="card active-projects"></div>
+          <div class="card completed-projects"></div>
+        </div>
+      </section>
+      
+      <!-- PROJECT MANAGER -->
+      <section id="projects" class="page-section" aria-labelledby="projects-title" hidden>
+        <header>
+          <h1 id="projects-title">Project Manager</h1>
+          <button class="fab" aria-label="Add Project">＋</button>
+        </header>
+        <div class="project-list"></div>
+        <!-- Project Modal/Dialog for create/edit (can be outside main if using portal/modal) -->
+        <dialog id="project-modal" aria-modal="true" hidden>
+          <form>
+            <!-- Project fields: title, timeline, milestones, priority, etc. -->
+          </form>
+        </dialog>
+      </section>
+      
+      <!-- TASK MANAGER -->
+      <section id="tasks" class="page-section" aria-labelledby="tasks-title" hidden>
+        <header>
+          <h1 id="tasks-title">Task Manager</h1>
+          <button class="fab" aria-label="Add Task">＋</button>
+        </header>
+        <div class="task-board">
+          <!-- Card-based layout for tasks, organized by project/status -->
+        </div>
+      </section>
+      
+      <!-- CALENDAR -->
+      <section id="calendar" class="page-section" aria-labelledby="calendar-title" hidden>
+        <header>
+          <h1 id="calendar-title">Calendar</h1>
+          <div class="calendar-view-switch">
+            <button data-view="day">Day</button>
+            <button data-view="week">Week</button>
+            <button data-view="month">Month</button>
+          </div>
+          <button class="fab" aria-label="Add Event">＋</button>
+        </header>
+        <div class="calendar-container">
+          <!-- Interactive calendar grid goes here -->
+        </div>
+      </section>
+      
+      <!-- CONTENT PLANNER -->
+      <section id="content-planner" class="page-section" aria-labelledby="content-title" hidden>
+        <header>
+          <h1 id="content-title">Content Planner</h1>
+          <button class="fab" aria-label="Add Content">＋</button>
+        </header>
+        <div class="content-cards">
+          <!-- Card-based layout: posts, videos, blogs -->
+        </div>
+      </section>
+      
+      <!-- NOTES & DOCS -->
+      <section id="notes" class="page-section" aria-labelledby="notes-title" hidden>
+        <header>
+          <h1 id="notes-title">Notes & Docs</h1>
+          <button class="fab" aria-label="Add Note">＋</button>
+        </header>
+        <div class="notes-list">
+          <!-- Card/Doc list, markdown or rich text editor -->
+        </div>
+      </section>
+      
+      <!-- GOAL TRACKING -->
+      <section id="goals" class="page-section" aria-labelledby="goals-title" hidden>
+        <header>
+          <h1 id="goals-title">Goal Tracking</h1>
+          <button class="fab" aria-label="Add Goal">＋</button>
+        </header>
+        <div class="goals-cards">
+          <!-- Card-based layout, KPIs, progress bars -->
+        </div>
+      </section>
+      
+      <!-- REMINDERS -->
+      <aside id="reminders" aria-labelledby="reminders-title">
+        <h2 id="reminders-title">Reminders & Upcoming Deadlines</h2>
+        <ul class="reminders-list"></ul>
+      </aside>
+    </main>
+    
+    <!-- Floating Add Buttons (FAB), shown contextually -->
+    <!-- Already included in section headers above for consistency -->
+  </div>
+  <!-- PWA: Service worker registration script goes here -->
+  <script src="/app.js"></script>
+</body>
+</html>
