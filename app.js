@@ -176,6 +176,98 @@ function loadData(key, fallback=[]) {
   } catch { return fallback; }
 }
 
+// --- TOP BAR LOGIC ---
+
+// 1. Greeting logic
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return { text: "Good morning", emoji: "☀️" };
+  if (hour >= 12 && hour < 17) return { text: "Good afternoon", emoji: "🌤" };
+  if (hour >= 17 && hour < 21) return { text: "Good evening", emoji: "🌙" };
+  return { text: "Good night", emoji: "🌌" };
+}
+function getUserName() {
+  return localStorage.getItem('name') || "sunshine";
+}
+function setGreeting() {
+  const greetingDiv = document.getElementById('greeting');
+  if (!greetingDiv) return;
+  const {text, emoji} = getGreeting();
+  const name = getUserName();
+  greetingDiv.textContent = `${text}, ${name} ${emoji}`;
+}
+setGreeting();
+setInterval(setGreeting, 60 * 1000); // update every minute
+
+// 2. Prompt animation logic
+function animatePrompt() {
+  const promptDiv = document.getElementById('prompt');
+  if (!promptDiv) return;
+  setTimeout(() => {
+    promptDiv.classList.add('fade-out');
+  }, 5000);
+}
+animatePrompt();
+
+// 3. Today's date logic
+function setTodayDate() {
+  const now = new Date();
+  const options = { weekday: 'long', month: 'long', day: 'numeric' };
+  const dateStr = now.toLocaleDateString(undefined, options);
+  const dateDiv = document.getElementById('today-date');
+  if (dateDiv) dateDiv.textContent = dateStr;
+}
+setTodayDate();
+
+// 4. Weather logic
+async function setWeather() {
+  const widget = document.getElementById('weather-widget');
+  const iconSpan = document.getElementById('weather-icon');
+  const tempSpan = document.getElementById('weather-temp');
+  const descSpan = document.getElementById('weather-desc');
+  if (!widget) return;
+  if (!navigator.geolocation) {
+    widget.textContent = "🌦 Weather unavailable";
+    return;
+  }
+  widget.textContent = "Fetching weather...";
+  navigator.geolocation.getCurrentPosition(async pos => {
+    const {latitude, longitude} = pos.coords;
+    try {
+      // OpenWeatherMap API call
+      const apiKey = "5a52a7229e08b03ecf70533c7716aaf4";
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Weather fetch failed");
+      const data = await res.json();
+      // Emoji mapping
+      const weatherId = data.weather[0].id;
+      const emoji = getWeatherEmoji(weatherId, data.weather[0].icon);
+      const temp = Math.round(data.main.temp);
+      const desc = data.weather[0].main;
+      iconSpan.textContent = emoji;
+      tempSpan.textContent = `${temp}°C`;
+      descSpan.textContent = desc;
+    } catch (e) {
+      widget.textContent = "🌦 Weather unavailable";
+    }
+  }, err => {
+    widget.textContent = "Location required";
+  });
+}
+function getWeatherEmoji(id, icon) {
+  // Basic mapping for main weather codes
+  if (id >= 200 && id < 300) return "⛈️";
+  if (id >= 300 && id < 400) return "🌦";
+  if (id >= 500 && id < 600) return (icon.includes("d") ? "🌦" : "🌧");
+  if (id >= 600 && id < 700) return "❄️";
+  if (id >= 700 && id < 800) return "🌫️";
+  if (id === 800) return (icon.includes("d") ? "☀️" : "🌕");
+  if (id === 801 || id === 802) return "🌤";
+  if (id === 803 || id === 804) return "☁️";
+  return "🌦";
+}
+setWeather();
 // Example (for projects):
 // saveData('projects', [{id:1, name:'My Project'}]);
 // const projects = loadData('projects');
