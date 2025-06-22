@@ -120,20 +120,119 @@
     <i data-lucide="plus"></i>
   </button>
 </section>
-      <!-- PROJECT MANAGER -->
-      <section id="projects" class="page-section" aria-labelledby="projects-title" hidden>
-        <header>
-          <h1 id="projects-title">Project Manager</h1>
-          <button class="fab" aria-label="Add Project">＋</button>
-        </header>
-        <div class="project-list"></div>
-        <!-- Project Modal/Dialog for create/edit (can be outside main if using portal/modal) -->
-        <dialog id="project-modal" aria-modal="true" hidden>
-          <form>
-            <!-- Project fields: title, timeline, milestones, priority, etc. -->
-          </form>
-        </dialog>
-      </section>
+
+    <!-- === Projects: Track Your Goals Section === -->
+<section id="projects-overview" aria-labelledby="projects-overview-title">
+  <h2 id="projects-overview-title">Track Your Goals</h2>
+  <div class="projects-goals-grid">
+    <!-- One widget per project -->
+    <div class="project-goal-widget" data-project="Work" style="--project-color:#b39ddb;">
+      <div class="pgw-main">
+        <div class="pgw-emoji" aria-hidden="true">🟣</div>
+        <div class="pgw-title">Work</div>
+        <button class="pgw-expand" aria-label="Show Work goals" tabindex="0"><i data-lucide="chevron-down"></i></button>
+        <div class="pgw-meter" role="progressbar" aria-label="Work project progress"><canvas></canvas><span class="pgw-percent">0%</span></div>
+      </div>
+      <div class="pgw-dropdown" hidden>
+        <div class="pgw-goals-list" data-project="Work"></div>
+        <div class="pgw-no-goal-msg" hidden>
+          No goal set for <span class="pgw-month"></span>. Want to add one?
+        </div>
+        <button class="pgw-add-goal" tabindex="0" aria-label="Add new goal to Work"><i data-lucide="plus"></i> Add Goal</button>
+        <div class="pgw-history">
+          <button class="pgw-history-prev" aria-label="Previous month" title="Previous month"><i data-lucide="chevron-left"></i></button>
+          <span class="pgw-history-label"></span>
+          <button class="pgw-history-next" aria-label="Next month" title="Next month"><i data-lucide="chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="project-goal-widget" data-project="School" style="--project-color:#64b5f6;">
+      <div class="pgw-main">
+        <div class="pgw-emoji" aria-hidden="true">💙</div>
+        <div class="pgw-title">School</div>
+        <button class="pgw-expand" aria-label="Show School goals" tabindex="0"><i data-lucide="chevron-down"></i></button>
+        <div class="pgw-meter" role="progressbar" aria-label="School project progress"><canvas></canvas><span class="pgw-percent">0%</span></div>
+      </div>
+      <div class="pgw-dropdown" hidden>
+        <div class="pgw-goals-list" data-project="School"></div>
+        <div class="pgw-no-goal-msg" hidden>
+          No goal set for <span class="pgw-month"></span>. Want to add one?
+        </div>
+        <button class="pgw-add-goal" tabindex="0" aria-label="Add new goal to School"><i data-lucide="plus"></i> Add Goal</button>
+        <div class="pgw-history">
+          <button class="pgw-history-prev" aria-label="Previous month" title="Previous month"><i data-lucide="chevron-left"></i></button>
+          <span class="pgw-history-label"></span>
+          <button class="pgw-history-next" aria-label="Next month" title="Next month"><i data-lucide="chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="project-goal-widget" data-project="Personal" style="--project-color:#f48fb1;">
+      <div class="pgw-main">
+        <div class="pgw-emoji" aria-hidden="true">💖</div>
+        <div class="pgw-title">Personal</div>
+        <button class="pgw-expand" aria-label="Show Personal goals" tabindex="0"><i data-lucide="chevron-down"></i></button>
+        <div class="pgw-meter" role="progressbar" aria-label="Personal project progress"><canvas></canvas><span class="pgw-percent">0%</span></div>
+      </div>
+      <div class="pgw-dropdown" hidden>
+        <div class="pgw-goals-list" data-project="Personal"></div>
+        <div class="pgw-no-goal-msg" hidden>
+          No goal set for <span class="pgw-month"></span>. Want to add one?
+        </div>
+        <button class="pgw-add-goal" tabindex="0" aria-label="Add new goal to Personal"><i data-lucide="plus"></i> Add Goal</button>
+        <div class="pgw-history">
+          <button class="pgw-history-prev" aria-label="Previous month" title="Previous month"><i data-lucide="chevron-left"></i></button>
+          <span class="pgw-history-label"></span>
+          <button class="pgw-history-next" aria-label="Next month" title="Next month"><i data-lucide="chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+    <div class="project-goal-widget" data-project="Other" style="--project-color:#81c784;">
+      <div class="pgw-main">
+        <div class="pgw-emoji" aria-hidden="true">🍃</div>
+        <div class="pgw-title">Other</div>
+        <button class="pgw-expand" aria-label="Show Other goals" tabindex="0"><i data-lucide="chevron-down"></i></button>
+        <div class="pgw-meter" role="progressbar" aria-label="Other project progress"><canvas></canvas><span class="pgw-percent">0%</span></div>
+      </div>
+      <div class="pgw-dropdown" hidden>
+        <div class="pgw-goals-list" data-project="Other"></div>
+        <div class="pgw-no-goal-msg" hidden>
+          No goal set for <span class="pgw-month"></span>. Want to add one?
+        </div>
+        <button class="pgw-add-goal" tabindex="0" aria-label="Add new goal to Other"><i data-lucide="plus"></i> Add Goal</button>
+        <div class="pgw-history">
+          <button class="pgw-history-prev" aria-label="Previous month" title="Previous month"><i data-lucide="chevron-left"></i></button>
+          <span class="pgw-history-label"></span>
+          <button class="pgw-history-next" aria-label="Next month" title="Next month"><i data-lucide="chevron-right"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Add Goal Modal -->
+<div id="add-goal-modal" class="add-goal-modal" hidden>
+  <div class="agm-content">
+    <button class="agm-close" aria-label="Close">&times;</button>
+    <h3>Add New Goal</h3>
+    <form>
+      <label>
+        Goal description
+        <input type="text" name="description" required maxlength="80" placeholder="e.g., Finish capstone project"/>
+      </label>
+      <label>
+        Numeric target (optional)
+        <input type="number" min="1" name="target" placeholder="e.g., 20"/>
+      </label>
+      <label>
+        Month & Year
+        <input type="month" name="monthyear" required />
+      </label>
+      <input type="hidden" name="project" />
+      <button type="submit" class="agm-save">Add Goal</button>
+    </form>
+  </div>
+</div>
+      
       
       <!-- TASK MANAGER -->
       <section id="tasks" class="page-section" aria-labelledby="tasks-title" hidden>
@@ -195,11 +294,7 @@
         </div>
       </section>
       
-      <!-- REMINDERS -->
-      <aside id="reminders" aria-labelledby="reminders-title">
-        <h2 id="reminders-title">Reminders & Upcoming Deadlines</h2>
-        <ul class="reminders-list"></ul>
-      </aside>
+      
     </main>
     
     <!-- Floating Add Buttons (FAB), shown contextually -->
