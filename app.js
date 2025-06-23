@@ -333,46 +333,47 @@ function renderRemindersAndPerformance() {
   const overdue = tasks.filter(
     t => t.status === "pending" && isPast(t.dueDate)
   ).sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
-
-  const remindersList = document.getElementById('reminders-list');
-  remindersList.innerHTML = '';
-  if (!showPast) {
-    overdue.forEach(task => {
-      const li = document.createElement('li');
-      li.className = 'overdue';
-      li.innerHTML = `
-        <span>
-          ${task.title}
-          <span class="recency-label" style="color:#ec407a; font-size:0.87em; margin-left:0.8em;">${getRecencyLabel(task.dueDate)}</span>
-        </span>
-        <span class="task-actions">
-          <button class="edit-task" title="Edit Task" data-id="${task.id}">
-            <i data-lucide="edit"></i>
-          </button>
-          <button class="resched-task" title="Reschedule" data-id="${task.id}">
-            <i data-lucide="calendar"></i>
-          </button>
-          <button class="archive-task" title="Archive" data-id="${task.id}">
-            <i data-lucide="archive"></i>
-          </button>
-          <button class="unarchive-task" title="Unarchive" data-id="${task.id}">
-    <i data-lucide="corner-up-left"></i>
-  </button>
-
-        </span>
-      `;
-      // Click opens modal
-      li.addEventListener('click', (e) => {
-        if (!e.target.closest('.task-actions')) openTaskModal(task.id);
-      });
-      // Action buttons
-      li.querySelector('.edit-task').onclick = (e) => { e.stopPropagation(); openTaskModal(task.id); };
-      li.querySelector('.resched-task').onclick = (e) => { e.stopPropagation(); openTaskModal(task.id, 'reschedule'); };
-      li.querySelector('.archive-task').onclick = (e) => { e.stopPropagation(); archiveTask(task.id, li); };
-      remindersList.appendChild(li);
+const pastWidget = document.getElementById('past-deadlines');
+const pastList = document.getElementById('past-tasks-list');
+pastList.innerHTML = '';
+if (showPast) {
+  pastWidget.removeAttribute('hidden');
+  const archived = tasks.filter(
+    t => t.status === "archived"
+  ).sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate));
+  archived.forEach(task => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span>
+        ${task.title}
+        <span class="recency-label" style="color:#b39ddb; font-size:0.85em; margin-left:0.8em;">${getRecencyLabel(task.dueDate)}</span>
+      </span>
+      <span class="task-actions">
+        <button class="edit-task" title="Edit Task" data-id="${task.id}">
+          <i data-lucide="edit"></i>
+        </button>
+        <button class="resched-task" title="Reschedule" data-id="${task.id}">
+          <i data-lucide="calendar"></i>
+        </button>
+        <button class="unarchive-task" title="Unarchive" data-id="${task.id}">
+          <i data-lucide="corner-up-left"></i>
+        </button>
+      </span>
+    `;
+    li.addEventListener('click', (e) => {
+      if (!e.target.closest('.task-actions')) openTaskModal(task.id);
     });
-  }
-
+    li.querySelector('.edit-task').onclick = (e) => { e.stopPropagation(); openTaskModal(task.id); };
+    li.querySelector('.resched-task').onclick = (e) => { e.stopPropagation(); openTaskModal(task.id, 'reschedule'); };
+    li.querySelector('.unarchive-task').onclick = (e) => {
+      e.stopPropagation();
+      unarchiveTask(task.id);
+    };
+    pastList.appendChild(li);
+  });
+} else {
+  pastWidget.setAttribute('hidden', 'true');
+}       
   // Past Deadlines
   const pastWidget = document.getElementById('past-deadlines');
   const pastList = document.getElementById('past-tasks-list');
