@@ -243,94 +243,7 @@
         </div>
       </section>
       
-      <!-- CALENDAR -->
-      <section id="calendar" class="page-section" aria-labelledby="calendar-title" hidden>
-        <header>
-          <h1 id="calendar-title">Calendar</h1>
-          <div class="calendar-view-switch">
-            <button data-view="day">Day</button>
-            <button data-view="week">Week</button>
-            <button data-view="month">Month</button>
-          </div>
-          <button class="fab" aria-label="Add Event">＋</button>
-        </header>
-        <div class="calendar-container">
-          <!-- Interactive calendar grid goes here -->
-        </div>
-      </section>
-      
-      <!-- CONTENT PLANNER -->
-      <section id="content-planner" class="page-section" aria-labelledby="content-title" hidden>
-        <header>
-          <h1 id="content-title">Content Planner</h1>
-          <button class="fab" aria-label="Add Content">＋</button>
-        </header>
-        <div class="content-cards">
-          <!-- Card-based layout: posts, videos, blogs -->
-        </div>
-      </section>
-      
-      <!-- NOTES & DOCS -->
-      <section id="notes" class="page-section" aria-labelledby="notes-title" hidden>
-        <header>
-          <h1 id="notes-title">Notes & Docs</h1>
-          <button class="fab" aria-label="Add Note">＋</button>
-        </header>
-        <div class="notes-list">
-          <!-- Card/Doc list, markdown or rich text editor -->
-        </div>
-      </section>
-      
-      <!-- GOAL TRACKING -->
-      <section id="goals" class="page-section" aria-labelledby="goals-title" hidden>
-        <header>
-          <h1 id="goals-title">Goal Tracking</h1>
-          <button class="fab" aria-label="Add Goal">＋</button>
-        </header>
-        <div class="goals-cards">
-          <!-- Card-based layout, KPIs, progress bars -->
-        </div>
-      </section>
-      <!-- === Smart Content & Task Calendar Section === -->
-<section id="calendar" class="page-section" aria-labelledby="calendar-title">
-  <header>
-    <h1 id="calendar-title">Content & Task Calendar</h1>
-    <div class="calendar-view-switch">
-      <button data-view="month" class="active">Month</button>
-      <!-- (Optional: Day/Week views in future) -->
-    </div>
-    <button class="fab calendar-fab" id="calendar-add-fab" aria-label="Add Task or Content"><i data-lucide="plus"></i></button>
-  </header>
-  <div class="calendar-controls">
-    <button id="calendar-prev" aria-label="Previous Month"><i data-lucide="chevron-left"></i></button>
-    <span id="calendar-month-label"></span>
-    <button id="calendar-next" aria-label="Next Month"><i data-lucide="chevron-right"></i></button>
-    <div class="calendar-filter-group">
-      <label><input type="radio" name="calendar-filter" value="all" checked> All</label>
-      <label><input type="radio" name="calendar-filter" value="task"> <span class="dot-task"></span> Tasks</label>
-      <label><input type="radio" name="calendar-filter" value="content"> <span class="dot-content"></span> Content</label>
-    </div>
-  </div>
-  <div class="calendar-grid-container">
-    <table class="calendar-grid" aria-label="Monthly calendar" tabindex="0">
-      <!-- Calendar days dynamically inserted here -->
-    </table>
-  </div>
-  <!-- Inline expanded day panel (desktop), modal on mobile -->
-  <div id="calendar-day-panel" class="calendar-day-panel" hidden>
-    <div class="cdp-header">
-      <span id="cdp-date-label"></span>
-      <button class="cdp-close" aria-label="Close" tabindex="0">&times;</button>
-    </div>
-    <div class="cdp-content-list">
-      <!-- List of content & tasks for selected day -->
-    </div>
-    <div class="cdp-actions">
-      <button class="cdp-add-task" aria-label="Add Task"><i data-lucide="plus"></i> Task</button>
-      <button class="cdp-add-content" aria-label="Add Content"><i data-lucide="plus"></i> Content</button>
-    </div>
-  </div>
-</section>
+    
 
 <!-- Calendar Add/Edit Modal -->
       <section id="calendar" class="page-section" aria-labelledby="calendar-title">
@@ -400,6 +313,7 @@
     </form>
   </div>
 </div>
+      </section>
       
     </main>
     
