@@ -1155,10 +1155,13 @@ function renderCalendarGrid() {
         let dots = "";
         let showCount = 0, more = 0;
         for (let i=0; i<items.length; i++) {
-          if (showCount < 3)
-            dots += `<span class="calendar-dot calendar-dot-${items[i].type}" title="${items[i].type==='content'?'Content':'Task'}">${CALENDAR_EMOJIS[items[i].type]}</span>`;
-          showCount++;
-        }
+  let type = items[i].type || "task"; // fallback to task if missing
+  let emoji = CALENDAR_EMOJIS[type] || "📌";
+  let title = (type === "content") ? "Content" : "Task";
+  if (showCount < 3)
+    dots += `<span class="calendar-dot calendar-dot-${type}" title="${title}">${emoji}</span>`;
+  showCount++;
+}
         if (showCount > 3) {
           more = showCount-3;
           dots += `<span class="calendar-dot calendar-dot-more">+${more}</span>`;
