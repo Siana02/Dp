@@ -1115,8 +1115,9 @@ let calendarSelectedDate = null;
 
 // -- Utilities --
 function loadTasksAll() {
-  // Use your existing loadTasks or extend as needed
-  return JSON.parse(localStorage.getItem('tasks') || "[]");
+  try {
+    return JSON.parse(localStorage.getItem('tasks')) || [];
+  } catch { return []; }
 }
 function saveTasksAll(tasks) {
   localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -1155,8 +1156,8 @@ function renderCalendarGrid() {
         let dots = "";
         let showCount = 0, more = 0;
         for (let i=0; i<items.length; i++) {
-  let type = items[i].type || "task"; // fallback to task if missing
-  let emoji = CALENDAR_EMOJIS[type] || "📌";
+  let type = (typeof items[i].type === "string") ? items[i].type : "task";
+  let emoji = CALENDAR_EMOJIS[type] || CALENDAR_EMOJIS["task"];
   let title = (type === "content") ? "Content" : "Task";
   if (showCount < 3)
     dots += `<span class="calendar-dot calendar-dot-${type}" title="${title}">${emoji}</span>`;
@@ -1216,9 +1217,10 @@ function renderCalendarDayPanel() {
     list.innerHTML = `<div class="cdp-item" style="color:#bdbdbd;">No tasks or content planned for this day.</div>`;
   } else {
     items.forEach(item=>{
-      let icon = item.type==="content"
-        ? platformIcon(item.platform)
-        : `<span class="cdp-icon">${CALENDAR_EMOJIS[item.type]}</span>`;
+  let type = (typeof item.type === "string") ? item.type : "task";
+  let icon = type==="content"
+    ? platformIcon(item.platform)
+    : `<span class="cdp-icon">${CALENDAR_EMOJIS[type] || CALENDAR_EMOJIS["task"]}</span>`;
       let meta = item.type==="content"
         ? [item.platform, item.format, item.goal].filter(Boolean).join(" · ")
         : "";
