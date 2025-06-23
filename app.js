@@ -2,94 +2,99 @@
 // Digital Planner App JS
 // =====================
 // Sidebar collapse/expand logic
-const sidebar = document.getElementById('sticky-sidebar');
-const sections = document.querySelectorAll('.page-section:not(#projects-overview):not(#calendar)');
-const hamburger = document.getElementById('sidebar-hamburger');
-const closeBtn = document.getElementById('sidebar-close');
+document.addEventListener("DOMContentLoaded", function() {
+  const sidebar = document.getElementById('sticky-sidebar');
+  const hamburger = document.getElementById('sidebar-hamburger');
+  const closeBtn = document.getElementById('sidebar-close');
+  const themeBtn = document.getElementById('sidebar-theme');
+  const themeIndicator = document.getElementById('theme-indicator');
+  const themes = [
+    { name: 'pastel', icon: '🌸' },
+    { name: 'dark', icon: '🌙' },
+    { name: 'light', icon: '🌞' }
+  ];
 
-// Desktop: collapse/expand on double click logo or long press (optionally)
-let collapsed = false;
-function setSidebarCollapsed(state) {
-  collapsed = state;
-  if (collapsed) sidebar.classList.add('collapsed');
-  else sidebar.classList.remove('collapsed');
-}
-
-// Optional: Toggle collapse/expand with a button (add if desired)
-// document.querySelector('.sidebar-logo').ondblclick = () => setSidebarCollapsed(!collapsed);
-
-// Mobile: open/close sidebar
-hamburger.onclick = () => sidebar.classList.add('expanded');
-closeBtn.onclick = () => sidebar.classList.remove('expanded');
-
-// Hide sidebar initially on small screens
-if (window.innerWidth < 700) sidebar.classList.remove('expanded');
-
-// Keyboard: Arrow navigation in sidebar
-sidebar.addEventListener('keydown', e => {
-  const links = Array.from(sidebar.querySelectorAll('.sidebar-link'));
-  const idx = links.indexOf(document.activeElement);
-  if (e.key === 'ArrowDown') {
-    e.preventDefault();
-    links[(idx + 1) % links.length].focus();
-  } else if (e.key === 'ArrowUp') {
-    e.preventDefault();
-    links[(idx - 1 + links.length) % links.length].focus();
+  // --- SIDEBAR COLLAPSE/EXPAND ---
+  function expandSidebar() {
+    sidebar.classList.add('expanded');
+    setTimeout(() => { if (window.lucide) lucide.createIcons(); }, 110);
   }
-});
+  function collapseSidebar() {
+    sidebar.classList.remove('expanded');
+  }
+  hamburger.onclick = expandSidebar;
+  closeBtn.onclick = collapseSidebar;
 
-// Scroll-to-section behavior
-sidebar.querySelectorAll('.sidebar-link').forEach(link => {
-  link.onclick = (e) => {
-    e.preventDefault();
-    const sectionId = link.getAttribute('data-section');
-    const section = document.getElementById(sectionId);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      // Optionally: highlight active link
-      sidebar.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
-      link.classList.add('active');
-      if (window.innerWidth < 700) sidebar.classList.remove('expanded');
+  // Collapse sidebar on outside click or after nav
+  document.addEventListener('click', (e) => {
+    if (
+      sidebar.classList.contains('expanded') &&
+      !sidebar.contains(e.target) &&
+      !e.target.closest('#sidebar-hamburger')
+    ) {
+      collapseSidebar();
     }
-  };
-});
-
-// Scrollspy: highlight link as user scrolls
-const sectionIds = ['dashboard', 'projects-overview', 'calendar'];
-window.addEventListener('scroll', () => {
-  let current = sectionIds[0];
-  for (const id of sectionIds) {
-    const el = document.getElementById(id);
-    if (el && el.getBoundingClientRect().top < window.innerHeight/2) current = id;
-  }
-  sidebar.querySelectorAll('.sidebar-link').forEach(link => {
-    link.classList.toggle('active', link.getAttribute('data-section') === current);
   });
+
+  // Nav link: scroll, highlight, auto-collapse
+  sidebar.querySelectorAll('.sidebar-link').forEach(link => {
+    link.onclick = (e) => {
+      e.preventDefault();
+      const sectionId = link.getAttribute('data-section');
+      const section = document.getElementById(sectionId);
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        sidebar.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+        collapseSidebar();
+      }
+    };
+  });
+
+  // Scrollspy highlight
+  const sectionIds = ['dashboard', 'projects-overview', 'calendar'];
+  window.addEventListener('scroll', () => {
+    let current = sectionIds[0];
+    for (const id of sectionIds) {
+      const el = document.getElementById(id);
+      if (el && el.getBoundingClientRect().top < window.innerHeight / 3) current = id;
+    }
+    sidebar.querySelectorAll('.sidebar-link').forEach(link => {
+      link.classList.toggle('active', link.getAttribute('data-section') === current);
+    });
+  });
+
+  // --- THEME SWITCHER ---
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    if (window.localStorage) localStorage.setItem('theme', theme);
+    // Visual indicator
+    const t = themes.find(t => t.name === theme) || themes[0];
+    themeIndicator.textContent = t.icon;
+    themeIndicator.setAttribute('aria-label', t.name.charAt(0).toUpperCase()+t.name.slice(1) + " theme");
+  }
+
+  function getSavedTheme() {
+    return window.localStorage ? localStorage.getItem('theme') : null;
+  }
+
+  // Switch theme: pastel → dark → light → pastel ...
+  themeBtn.onclick = () => {
+    let cur = document.documentElement.getAttribute('data-theme') || document.body.getAttribute('data-theme') || 'pastel';
+    let idx = themes.findIndex(t => t.name === cur);
+    let nextTheme = themes[(idx + 1) % themes.length].name;
+    applyTheme(nextTheme);
+  };
+
+  // Initialize theme on page load
+  const saved = getSavedTheme();
+  applyTheme(saved || 'pastel');
+
+  // Lucide icons initialization
+  if (window.lucide) lucide.createIcons();
 });
-
-// Show default section
-showSection(currentSectionId);
-
-// ---- Theme Switcher ----
-const themeSwitcher = document.getElementById('theme-switcher');
-const themes = ['light', 'dark', 'pastel'];
-function getCurrentTheme() {
-  return localStorage.getItem('theme') || 'light';
-}
-function setTheme(theme) {
-  document.documentElement.setAttribute('data-theme', theme);
-  localStorage.setItem('theme', theme);
-  themeSwitcher.textContent = ({
-    light: "🌞", dark: "🌙", pastel: "🧁"
-  })[theme];
-}
-themeSwitcher.addEventListener('click', () => {
-  let idx = themes.indexOf(getCurrentTheme());
-  let nextTheme = themes[(idx+1) % themes.length];
-  setTheme(nextTheme);
-});
-setTheme(getCurrentTheme());
-
+  
 // ---- Modal Example (Project/Task) ----
 function openProjectModal() {
   const modal = document.getElementById('project-modal');
