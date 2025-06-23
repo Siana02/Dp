@@ -355,6 +355,10 @@ function renderRemindersAndPerformance() {
           <button class="archive-task" title="Archive" data-id="${task.id}">
             <i data-lucide="archive"></i>
           </button>
+          <button class="unarchive-task" title="Unarchive" data-id="${task.id}">
+    <i data-lucide="corner-up-left"></i>
+  </button>
+
         </span>
       `;
       // Click opens modal
@@ -401,6 +405,10 @@ function renderRemindersAndPerformance() {
       li.querySelector('.resched-task').onclick = (e) => { e.stopPropagation(); openTaskModal(task.id, 'reschedule'); };
       pastList.appendChild(li);
     });
+    li.querySelector('.unarchive-task').onclick = (e) => {
+  e.stopPropagation();
+  unarchiveTask(task.id);
+};
   } else {
     pastWidget.setAttribute('hidden', 'true');
   }
@@ -456,7 +464,15 @@ function undoArchive() {
     lastArchivedTask = null;
   }
 }
-
+function unarchiveTask(taskId) {
+  const tasks = loadTasks();
+  const idx = tasks.findIndex(t => t.id === taskId);
+  if (idx === -1) return;
+  tasks[idx].status = "pending";
+  saveTasks(tasks);
+  renderRemindersAndPerformance();
+  renderTodaysTasks?.();
+}
 // --- Snackbar Logic ---
 function showSnackbar(msg, undoFn) {
   const snackbar = document.getElementById('snackbar');
