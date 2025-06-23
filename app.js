@@ -1266,10 +1266,7 @@ document.querySelectorAll('input[name="calendar-filter"]').forEach(inp=>{
   inp.onchange = ()=>{ calendarFilter=inp.value; renderCalendarGrid(); document.getElementById("calendar-day-panel").hidden = true; };
 });
 
-// -- Add FAB --
-document.getElementById("calendar-add-fab").onclick = ()=>{
-  openCalendarModal("task", null);
-};
+
 
 // -- Modal logic --
 function openCalendarModal(type, date) {
