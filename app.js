@@ -1,27 +1,72 @@
 // =====================
 // Digital Planner App JS
 // =====================
-
-// ---- Section Navigation ----
-const sidebar = document.getElementById('sidebar');
-// Only tabbed sections, NOT 'projects-overview' or 'calendar'
+// Sidebar collapse/expand logic
+const sidebar = document.getElementById('sticky-sidebar');
 const sections = document.querySelectorAll('.page-section:not(#projects-overview):not(#calendar)');
-const sidebarButtons = sidebar.querySelectorAll('button[data-section]');
-let currentSectionId = 'dashboard';
-function showSection(id) {
-  sections.forEach(sec => {
-    sec.hidden = (sec.id !== id);
-    if (!sec.hidden) {
-      sec.classList.add('slide-in');
-      setTimeout(() => sec.classList.remove('slide-in'), 400);
-    }
-  });
-  sidebarButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.section === id));
-  currentSectionId = id;
+const hamburger = document.getElementById('sidebar-hamburger');
+const closeBtn = document.getElementById('sidebar-close');
+
+// Desktop: collapse/expand on double click logo or long press (optionally)
+let collapsed = false;
+function setSidebarCollapsed(state) {
+  collapsed = state;
+  if (collapsed) sidebar.classList.add('collapsed');
+  else sidebar.classList.remove('collapsed');
 }
-sidebarButtons.forEach(btn => {
-  btn.addEventListener('click', () => showSection(btn.dataset.section));
+
+// Optional: Toggle collapse/expand with a button (add if desired)
+// document.querySelector('.sidebar-logo').ondblclick = () => setSidebarCollapsed(!collapsed);
+
+// Mobile: open/close sidebar
+hamburger.onclick = () => sidebar.classList.add('expanded');
+closeBtn.onclick = () => sidebar.classList.remove('expanded');
+
+// Hide sidebar initially on small screens
+if (window.innerWidth < 700) sidebar.classList.remove('expanded');
+
+// Keyboard: Arrow navigation in sidebar
+sidebar.addEventListener('keydown', e => {
+  const links = Array.from(sidebar.querySelectorAll('.sidebar-link'));
+  const idx = links.indexOf(document.activeElement);
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    links[(idx + 1) % links.length].focus();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    links[(idx - 1 + links.length) % links.length].focus();
+  }
 });
+
+// Scroll-to-section behavior
+sidebar.querySelectorAll('.sidebar-link').forEach(link => {
+  link.onclick = (e) => {
+    e.preventDefault();
+    const sectionId = link.getAttribute('data-section');
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      // Optionally: highlight active link
+      sidebar.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+      if (window.innerWidth < 700) sidebar.classList.remove('expanded');
+    }
+  };
+});
+
+// Scrollspy: highlight link as user scrolls
+const sectionIds = ['dashboard', 'projects-overview', 'calendar'];
+window.addEventListener('scroll', () => {
+  let current = sectionIds[0];
+  for (const id of sectionIds) {
+    const el = document.getElementById(id);
+    if (el && el.getBoundingClientRect().top < window.innerHeight/2) current = id;
+  }
+  sidebar.querySelectorAll('.sidebar-link').forEach(link => {
+    link.classList.toggle('active', link.getAttribute('data-section') === current);
+  });
+});
+
 // Show default section
 showSection(currentSectionId);
 
@@ -44,33 +89,6 @@ themeSwitcher.addEventListener('click', () => {
   setTheme(nextTheme);
 });
 setTheme(getCurrentTheme());
-
-// ---- Layout Dragger (Stub) ----
-const layoutDragger = document.getElementById('layout-dragger');
-layoutDragger.textContent = "🖲️";
-layoutDragger.addEventListener('click', () => {
-  alert('Drag-and-drop layout customization coming soon!');
-});
-
-// ---- FAB: Floating Add Button Logic ----
-document.querySelectorAll('.fab').forEach(fab => {
-  fab.addEventListener('click', e => {
-    const section = fab.closest('.page-section');
-    if (section) {
-      switch (section.id) {
-        case 'projects':
-          openProjectModal();
-          break;
-        case 'tasks':
-          openTaskModal();
-          break;
-        // Add more cases as needed for content, notes, goals, etc.
-        default:
-          alert(`Add new item in "${section.id}"`);
-      }
-    }
-  });
-});
 
 // ---- Modal Example (Project/Task) ----
 function openProjectModal() {
