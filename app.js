@@ -1169,3 +1169,238 @@ if ('serviceWorker' in navigator) {
       .catch(err => console.error('Service worker error', err));
   });
 }
+// === Smart Content & Task Calendar Section ===
+
+const CALENDAR_PLATFORMS = ["Instagram","TikTok","YouTube","LinkedIn","X","Pinterest"];
+const CALENDAR_FORMATS = ["Post","Reel","Carousel","Story","Video","Article"];
+const CALENDAR_GOALS = ["Engagement","Awareness","Conversions","Community","Traffic"];
+const CALENDAR_COLORS = {
+  task: "#fcb6b6",
+  content: "#64b5f6"
+};
+const CALENDAR_EMOJIS = {
+  task: "📌",
+  content: "📸"
+};
+// -- State --
+let calendarMonth = (new Date()).getMonth();
+let calendarYear = (new Date()).getFullYear();
+let calendarFilter = "all";
+let calendarSelectedDate = null;
+
+// -- Utilities --
+function loadTasksAll() {
+  // Use your existing loadTasks or extend as needed
+  return JSON.parse(localStorage.getItem('tasks') || "[]");
+}
+function saveTasksAll(tasks) {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+function calendarDaysInMonth(month, year) {
+  // month: 0-based
+  return new Date(year, month+1, 0).getDate();
+}
+function pad2(n) { return n<10 ? "0"+n : ""+n; }
+function calendarTodayYMD() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`;
+}
+
+// -- Render Calendar Grid --
+function renderCalendarGrid() {
+  const daysInMonth = calendarDaysInMonth(calendarMonth, calendarYear);
+  const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
+  const grid = document.querySelector(".calendar-grid");
+  // Header row
+  const weekdays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+  grid.innerHTML = `<thead><tr>${weekdays.map(d=>`<th>${d}</th>`).join("")}</tr></thead><tbody></tbody>`;
+  let html = "";
+  let day = 1 - firstDay;
+  for (let r=0; r<6; r++) {
+    html += "<tr>";
+    for (let c=0; c<7; c++) {
+      if (day < 1 || day > daysInMonth) {
+        html += `<td class="empty"></td>`;
+      } else {
+        const dateYMD = `${calendarYear}-${pad2(calendarMonth+1)}-${pad2(day)}`;
+        const todayClass = (dateYMD===calendarTodayYMD()) ? "today" : "";
+        const selectedClass = (calendarSelectedDate===dateYMD) ? "selected" : "";
+        // Dots
+        const items = getCalendarItemsForDate(dateYMD, calendarFilter);
+        let dots = "";
+        let showCount = 0, more = 0;
+        for (let i=0; i<items.length; i++) {
+          if (showCount < 3)
+            dots += `<span class="calendar-dot calendar-dot-${items[i].type}" title="${items[i].type==='content'?'Content':'Task'}">${CALENDAR_EMOJIS[items[i].type]}</span>`;
+          showCount++;
+        }
+        if (showCount > 3) {
+          more = showCount-3;
+          dots += `<span class="calendar-dot calendar-dot-more">+${more}</span>`;
+        }
+        html += `<td tabindex="0" class="${todayClass} ${selectedClass}" data-date="${dateYMD}">
+          <div class="calendar-date-number">${day}</div>
+          <div class="calendar-dots">${dots}</div>
+        </td>`;
+      }
+      day++;
+    }
+    html += "</tr>";
+  }
+  grid.querySelector("tbody").innerHTML = html;
+  document.getElementById('calendar-month-label').textContent =
+    `${new Date(calendarYear, calendarMonth).toLocaleString(undefined,{month:'long'})} ${calendarYear}`;
+  // Attach click/focus handlers
+  grid.querySelectorAll("td[data-date]").forEach(td=>{
+    td.onclick = ()=>openCalendarDayPanel(td.getAttribute("data-date"));
+    td.onkeydown = e=>{
+      if (e.key==="Enter"||e.key===" ") openCalendarDayPanel(td.getAttribute("data-date"));
+    };
+  });
+  if (window.lucide) lucide.createIcons();
+}
+
+// -- Filtered items for a day --
+function getCalendarItemsForDate(date, filter) {
+  const all = loadTasksAll().filter(t => t.dueDate === date);
+  if (filter==="task") return all.filter(t=>!t.type||t.type==="task");
+  if (filter==="content") return all.filter(t=>t.type==="content");
+  return all;
+}
+
+// -- Expand Day Panel --
+function openCalendarDayPanel(date) {
+  calendarSelectedDate = date;
+  renderCalendarGrid();
+  renderCalendarDayPanel();
+}
+function renderCalendarDayPanel() {
+  const panel = document.getElementById("calendar-day-panel");
+  if (!calendarSelectedDate) return panel.hidden = true;
+  panel.hidden = false;
+  panel.querySelector("#cdp-date-label").textContent =
+    `${new Date(calendarSelectedDate).toLocaleString(undefined,{weekday:"short",month:"short",day:"numeric",year:"numeric"})}`;
+  // List
+  const list = panel.querySelector(".cdp-content-list");
+  const items = getCalendarItemsForDate(calendarSelectedDate, calendarFilter);
+  list.innerHTML = "";
+  if (items.length===0) {
+    list.innerHTML = `<div class="cdp-item" style="color:#bdbdbd;">No tasks or content planned for this day.</div>`;
+  } else {
+    items.forEach(item=>{
+      let icon = item.type==="content"
+        ? platformIcon(item.platform)
+        : `<span class="cdp-icon">${CALENDAR_EMOJIS[item.type]}</span>`;
+      let meta = item.type==="content"
+        ? [item.platform, item.format, item.goal].filter(Boolean).join(" · ")
+        : "";
+      let caption = item.type==="content" && item.caption ? `<div class="cdp-caption">${item.caption}</div>` : "";
+      list.innerHTML += `
+        <div class="cdp-item">
+          ${icon}
+          <div class="cdp-item-content">
+            <div class="cdp-title">${item.title}</div>
+            ${meta?`<div class="cdp-meta">${meta}</div>`:""}
+            ${caption}
+          </div>
+        </div>
+      `;
+    });
+  }
+  // Actions
+  panel.querySelector(".cdp-add-task").onclick = ()=>openCalendarModal("task", calendarSelectedDate);
+  panel.querySelector(".cdp-add-content").onclick = ()=>openCalendarModal("content", calendarSelectedDate);
+  panel.querySelector(".cdp-close").onclick = ()=>{
+    panel.hidden = true; calendarSelectedDate = null; renderCalendarGrid();
+  };
+}
+
+// -- Platform icon SVGs --
+function platformIcon(platform) {
+  const icons = {
+    Instagram: `<span class="cdp-icon" title="Instagram" style="color:#dd2a7b;">📸</span>`,
+    TikTok: `<span class="cdp-icon" title="TikTok" style="color:#000;">🎵</span>`,
+    YouTube: `<span class="cdp-icon" title="YouTube" style="color:#e62117;">▶️</span>`,
+    LinkedIn: `<span class="cdp-icon" title="LinkedIn" style="color:#0077b5;">💼</span>`,
+    X: `<span class="cdp-icon" title="X" style="color:#14171a;">✖️</span>`,
+    Pinterest: `<span class="cdp-icon" title="Pinterest" style="color:#e60023;">📌</span>`
+  };
+  return icons[platform] || `<span class="cdp-icon">${CALENDAR_EMOJIS.content}</span>`;
+}
+
+// -- Calendar nav/filter --
+document.getElementById("calendar-prev").onclick = ()=>{
+  if (calendarMonth===0) { calendarMonth=11; calendarYear--;} else calendarMonth--;
+  calendarSelectedDate = null; renderCalendarGrid(); document.getElementById("calendar-day-panel").hidden = true;
+};
+document.getElementById("calendar-next").onclick = ()=>{
+  if (calendarMonth===11) { calendarMonth=0; calendarYear++;} else calendarMonth++;
+  calendarSelectedDate = null; renderCalendarGrid(); document.getElementById("calendar-day-panel").hidden = true;
+};
+document.querySelectorAll('input[name="calendar-filter"]').forEach(inp=>{
+  inp.onchange = ()=>{ calendarFilter=inp.value; renderCalendarGrid(); document.getElementById("calendar-day-panel").hidden = true; };
+});
+
+// -- Add FAB --
+document.getElementById("calendar-add-fab").onclick = ()=>{
+  openCalendarModal("task", null);
+};
+
+// -- Modal logic --
+function openCalendarModal(type, date) {
+  const modal = document.getElementById("calendar-modal");
+  const form = document.getElementById("calendar-item-form");
+  modal.hidden = false;
+  document.getElementById("calendar-modal-title").textContent = `Add New ${type==="content"?"Content":"Task"}`;
+  form.type.value = type;
+  form.title.value = "";
+  form.dueDate.value = date||calendarTodayYMD();
+  // Show/hide content fields
+  form.querySelector(".calendar-content-fields").hidden = (type!=="content");
+  form.platform.value = "Instagram";
+  form.format.value = "Post";
+  form.goal.value = "Engagement";
+  form.caption.value = "";
+  // Focus
+  setTimeout(()=>form.title.focus(),50);
+  form.type.onchange = ()=>form.querySelector(".calendar-content-fields").hidden = (form.type.value!=="content");
+}
+
+// Close modal
+document.querySelector(".calendar-modal-close").onclick = ()=>document.getElementById("calendar-modal").hidden=true;
+
+// Modal submit
+document.getElementById("calendar-item-form").onsubmit = function(e){
+  e.preventDefault();
+  const form = this;
+  const type = form.type.value;
+  const title = form.title.value.trim();
+  const dueDate = form.dueDate.value;
+  if (!type||!title||!dueDate) return;
+  let item = {
+    id: crypto.randomUUID(),
+    title, dueDate, type
+  };
+  if (type==="content") {
+    item.platform = form.platform.value;
+    item.format = form.format.value;
+    item.goal = form.goal.value;
+    item.caption = form.caption.value;
+    item.status = "Draft";
+  }
+  let tasks = loadTasksAll();
+  tasks.push(item);
+  saveTasksAll(tasks);
+  document.getElementById("calendar-modal").hidden=true;
+  calendarSelectedDate = dueDate;
+  renderCalendarGrid();
+  renderCalendarDayPanel();
+};
+
+// Keyboard/modal accessibility
+document.getElementById('calendar-modal').addEventListener('keydown', e=>{
+  if (e.key==="Escape") document.getElementById('calendar-modal').hidden=true;
+});
+
+// -- Initial render --
+renderCalendarGrid();
