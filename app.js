@@ -102,99 +102,6 @@ document.addEventListener("DOMContentLoaded", function() {
   // Lucide icons initialization
   if (window.lucide) lucide.createIcons();
 });
-  
-// ---- Modal Example (Project/Task) ----
-function openProjectModal() {
-  const modal = document.getElementById('project-modal');
-  if (modal) { modal.showModal(); }
-}
-function closeProjectModal() {
-  const modal = document.getElementById('project-modal');
-  if (modal) { modal.close(); }
-}
-// Add events for modal close if needed
-
-// ---- Slide-in Animation ----
-const style = document.createElement('style');
-style.textContent = `
-.slide-in {
-  animation: slideInFade 0.4s;
-}
-@keyframes slideInFade {
-  from { opacity:0; transform: translateY(20px);}
-  to { opacity:1; transform: translateY(0);}
-}`;
-document.head.appendChild(style);
-
-// ---- Collapsible Sections (if used) ----
-document.querySelectorAll('.collapsible > .collapsible-header').forEach(header => {
-  header.addEventListener('click', () => {
-    const parent = header.parentElement;
-    const expanded = parent.getAttribute('aria-expanded') === "true";
-    parent.setAttribute('aria-expanded', !expanded);
-  });
-});
-
-// ---- Responsive Sidebar (mobile) ----
-function adjustSidebarMobile() {
-  if (window.innerWidth <= 600) {
-    // Move sidebar to bottom, handled by CSS
-    sidebar.setAttribute('aria-label', 'Bottom Navigation');
-  } else {
-    sidebar.setAttribute('aria-label', 'Main Navigation');
-  }
-}
-window.addEventListener('resize', adjustSidebarMobile);
-adjustSidebarMobile();
-
-// ---- Calendar View Toggle ----
-const calendarSection = document.getElementById('calendar');
-if (calendarSection) {
-  const viewSwitch = calendarSection.querySelector('.calendar-view-switch');
-  if (viewSwitch) {
-    viewSwitch.querySelectorAll('button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        viewSwitch.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        // Replace with actual calendar rendering logic!
-        calendarSection.querySelector('.calendar-container').textContent =
-          `Viewing: ${btn.dataset.view}`;
-      });
-    });
-    // Set default view
-    viewSwitch.querySelector('button[data-view="week"]').click();
-  }
-}
-
-// ---- Simple Drag-and-drop for Cards (Tasks Example) ----
-const taskBoard = document.querySelector('.task-board');
-if (taskBoard) {
-  taskBoard.addEventListener('dragstart', e => {
-    if (e.target.classList.contains('card')) {
-      e.target.classList.add('dragging');
-      e.dataTransfer.effectAllowed = 'move';
-    }
-  });
-  taskBoard.addEventListener('dragend', e => {
-    if (e.target.classList.contains('card')) {
-      e.target.classList.remove('dragging');
-    }
-  });
-  taskBoard.addEventListener('dragover', e => {
-    e.preventDefault();
-    const dragging = taskBoard.querySelector('.card.dragging');
-    if (dragging) {
-      // Find where to insert
-      const after = Array.from(taskBoard.children).find(child =>
-        child !== dragging &&
-        child.getBoundingClientRect().top > e.clientY
-      );
-      taskBoard.insertBefore(dragging, after || null);
-    }
-  });
-  // Make all cards draggable
-  taskBoard.querySelectorAll('.card').forEach(card => card.setAttribute('draggable', true));
-}
 
 // ---- Local Storage Save/Load for MVP ----
 function saveData(key, data) {
@@ -219,7 +126,7 @@ function getGreeting() {
   return { text: "Good night", emoji: "🌌" };
 }
 function getUserName() {
-  return localStorage.getItem('name') || "sunshine";
+  return localStorage.getItem('name') || "";
 }
 function setGreeting() {
   const greetingDiv = document.getElementById('greeting');
@@ -875,21 +782,6 @@ function undoDeleteTask() {
     lastDeletedTask = null;
   }
 }
-
-// --- Add Task FAB ---
-const fab = document.getElementById('fab-add-task');
-if (fab) {
-  fab.onclick = () => {
-    openTaskModal(null, null, { dueDate: (new Date()).toISOString().slice(0,10), project: "Personal", importance: "medium" });
-  };
-}
-
-// --- Hide FAB when modal open ---
-const observer = new MutationObserver(() => {
-  const modal = document.getElementById('edit-task-modal');
-  if (fab) fab.hidden = modal && modal.style.display === "flex";
-});
-observer.observe(document.body, { childList: true, subtree: true });
 
 // --- Extend openTaskModal for new tasks ---
 const origOpenTaskModal = window.openTaskModal;
