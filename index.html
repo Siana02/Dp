@@ -22,10 +22,8 @@
     <nav id="sidebar" aria-label="Main Navigation">
       <ul>
         <li><button data-section="dashboard" aria-label="Dashboard"><span>🏠</span> Dashboard</button></li>
-        <li><button data-section="projects" aria-label="Projects"><span>📁</span> Projects</button></li>
-        <li><button data-section="calendar" aria-label="Calendar"><span>📅</span> Calendar</button></li>
-        <li><button data-section="notes" aria-label="Notes"><span>📝</span> Notes & Docs</button></li>
-        <li><button data-section="focus" aria-label="Focus"><span>🎯</span> Focus</button></li>
+        <li><button data-section="projects-overview" aria-label="Projects"><span>📁</span> Projects</button></li>
+        <li><button data-section="calendar-modal" aria-label="Calendar"><span>📅</span> Calendar</button></li>
       </ul>
     </nav>
     <!-- Main Content Area -->
@@ -33,8 +31,8 @@
       <!-- DASHBOARD -->
       <section id="dashboard" class="page-section" aria-labelledby="dashboard-title">
         <header>
-          <h1 id="dashboard-title">Dashboard</h1>
-          <div id="date-overview"></div>
+          <h1 id="dashboard-title">Digital Planner</h1>
+        
         </header>
         <div id="dashboard-topbar" class="topbar">
   <div class="topbar-left">
@@ -293,7 +291,114 @@
           <!-- Card-based layout, KPIs, progress bars -->
         </div>
       </section>
-      
+      <!-- === Smart Content & Task Calendar Section === -->
+<section id="calendar" class="page-section" aria-labelledby="calendar-title">
+  <header>
+    <h1 id="calendar-title">Content & Task Calendar</h1>
+    <div class="calendar-view-switch">
+      <button data-view="month" class="active">Month</button>
+      <!-- (Optional: Day/Week views in future) -->
+    </div>
+    <button class="fab calendar-fab" id="calendar-add-fab" aria-label="Add Task or Content"><i data-lucide="plus"></i></button>
+  </header>
+  <div class="calendar-controls">
+    <button id="calendar-prev" aria-label="Previous Month"><i data-lucide="chevron-left"></i></button>
+    <span id="calendar-month-label"></span>
+    <button id="calendar-next" aria-label="Next Month"><i data-lucide="chevron-right"></i></button>
+    <div class="calendar-filter-group">
+      <label><input type="radio" name="calendar-filter" value="all" checked> All</label>
+      <label><input type="radio" name="calendar-filter" value="task"> <span class="dot-task"></span> Tasks</label>
+      <label><input type="radio" name="calendar-filter" value="content"> <span class="dot-content"></span> Content</label>
+    </div>
+  </div>
+  <div class="calendar-grid-container">
+    <table class="calendar-grid" aria-label="Monthly calendar" tabindex="0">
+      <!-- Calendar days dynamically inserted here -->
+    </table>
+  </div>
+  <!-- Inline expanded day panel (desktop), modal on mobile -->
+  <div id="calendar-day-panel" class="calendar-day-panel" hidden>
+    <div class="cdp-header">
+      <span id="cdp-date-label"></span>
+      <button class="cdp-close" aria-label="Close" tabindex="0">&times;</button>
+    </div>
+    <div class="cdp-content-list">
+      <!-- List of content & tasks for selected day -->
+    </div>
+    <div class="cdp-actions">
+      <button class="cdp-add-task" aria-label="Add Task"><i data-lucide="plus"></i> Task</button>
+      <button class="cdp-add-content" aria-label="Add Content"><i data-lucide="plus"></i> Content</button>
+    </div>
+  </div>
+</section>
+
+<!-- Calendar Add/Edit Modal -->
+<div id="calendar-modal" class="calendar-modal" hidden>
+  <div class="calendar-modal-content">
+    <button class="calendar-modal-close" aria-label="Close">&times;</button>
+    <h3 id="calendar-modal-title">Add New Item</h3>
+    <form id="calendar-item-form">
+      <label>
+        Type
+        <select name="type" required>
+          <option value="task">Task</option>
+          <option value="content">Content</option>
+        </select>
+      </label>
+      <label>
+        Title
+        <input type="text" name="title" required maxlength="80" placeholder="Title or headline"/>
+      </label>
+      <label>
+        Due Date
+        <input type="date" name="dueDate" required />
+      </label>
+      <!-- Content-type fields -->
+      <div class="calendar-content-fields" hidden>
+        <label>
+          Platform
+          <select name="platform">
+            <option value="Instagram">Instagram</option>
+            <option value="TikTok">TikTok</option>
+            <option value="YouTube">YouTube</option>
+            <option value="LinkedIn">LinkedIn</option>
+            <option value="X">X (Twitter)</option>
+            <option value="Pinterest">Pinterest</option>
+          </select>
+        </label>
+        <label>
+          Format
+          <select name="format">
+            <option value="Post">Post</option>
+            <option value="Reel">Reel</option>
+            <option value="Carousel">Carousel</option>
+            <option value="Story">Story</option>
+            <option value="Video">Video</option>
+            <option value="Article">Article</option>
+          </select>
+        </label>
+        <label>
+          Goal
+          <select name="goal">
+            <option value="Engagement">Engagement</option>
+            <option value="Awareness">Awareness</option>
+            <option value="Conversions">Conversions</option>
+            <option value="Community">Community</option>
+            <option value="Traffic">Traffic</option>
+          </select>
+        </label>
+        <label>
+          Caption / Notes
+          <textarea name="caption" rows="2" maxlength="280"></textarea>
+        </label>
+        <input type="hidden" name="status" value="Draft" />
+      </div>
+      <div class="calendar-modal-actions">
+        <button type="submit" class="calendar-modal-save">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
       
     </main>
     
