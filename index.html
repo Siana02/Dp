@@ -19,13 +19,56 @@
   </div>
   <div id="app-container">
     <!-- Sidebar / Tab Nav -->
-    <nav id="sidebar" aria-label="Main Navigation">
-      <ul>
-        <li><button data-section="dashboard" aria-label="Dashboard"><span>🏠</span> Dashboard</button></li>
-        <li><button data-section="projects-overview" aria-label="Projects"><span>📁</span> Projects</button></li>
-        <li><button data-section="calendar" aria-label="Calendar"><span>📅</span> Calendar</button></li>
-      </ul>
-    </nav>
+    <!-- Sticky Sidebar -->
+<aside id="sticky-sidebar" class="sidebar pastel">
+  <div class="sidebar-top">
+    <button id="sidebar-hamburger" class="sidebar-hamburger" aria-label="Open navigation">
+      <i data-lucide="menu"></i>
+    </button>
+    <span class="sidebar-logo" aria-label="Digital Planner">DP</span>
+    <button id="sidebar-close" class="sidebar-close" aria-label="Close navigation">
+      <i data-lucide="x"></i>
+    </button>
+  </div>
+  <nav class="sidebar-nav" aria-label="Section navigation">
+    <ul>
+      <li>
+        <a href="#dashboard" class="sidebar-link" data-section="dashboard" tabindex="0">
+          <span class="sidebar-icon"><i data-lucide="bar-chart-3"></i></span>
+          <span class="sidebar-label">Dashboard</span>
+          <span class="sidebar-badge" id="notif-dashboard" hidden></span>
+        </a>
+      </li>
+      <li>
+        <a href="#projects-overview" class="sidebar-link" data-section="projects-overview" tabindex="0">
+          <span class="sidebar-icon"><i data-lucide="folder"></i></span>
+          <span class="sidebar-label">Projects</span>
+          <span class="sidebar-badge" id="notif-projects" hidden></span>
+        </a>
+      </li>
+      <li>
+        <a href="#calendar" class="sidebar-link" data-section="calendar" tabindex="0">
+          <span class="sidebar-icon"><i data-lucide="calendar"></i></span>
+          <span class="sidebar-label">Calendar</span>
+          <span class="sidebar-badge" id="notif-calendar" hidden></span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <div class="sidebar-bottom">
+    <button id="sidebar-theme" class="sidebar-action" aria-label="Switch theme">
+      <i data-lucide="moon-star"></i>
+    </button>
+    <button id="sidebar-settings" class="sidebar-action" aria-label="Settings">
+      <i data-lucide="settings"></i>
+    </button>
+    <div class="sidebar-avatar" tabindex="0" title="Your Profile">
+      <img src="profile.jpg" alt="Profile" />
+      <!-- Optional notification dot -->
+      <span class="avatar-badge" id="avatar-badge" hidden></span>
+    </div>
+  </div>
+</aside>
     <!-- Main Content Area -->
     <main id="main-content">
       <!-- DASHBOARD -->
