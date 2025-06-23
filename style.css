@@ -317,6 +317,19 @@ html, body {
   #sidebar-close {
     display: none;
   }
+  /* Show the theme switcher as a nav item */
+  #sticky-sidebar .sidebar-theme-nav-mobile {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+}
+
+/* Hide the mobile theme nav on desktop */
+#sticky-sidebar .sidebar-theme-nav-mobile {
+  display: none;
+}
 }
 /* SECTION LAYOUTS */
 .page-section {
