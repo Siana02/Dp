@@ -262,34 +262,62 @@ html, body {
     margin-right: 200px; /* expanded sidebar width */
   }
 }
-
-/* Mobile: sidebar on left */
-@media (max-width: 699px) {
+@media (max-width: 600px) {
   #sticky-sidebar.sidebar {
+    top: unset;
     left: 0;
-    right: unset;
-    border-radius: 0 var(--sidebar-radius) var(--sidebar-radius) 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw !important;
+    height: 60px !important; /* or your preferred height */
+    flex-direction: row !important;
+    border-radius: 24px 24px 0 0; /* Rounded top corners */
+    box-shadow: 0 -2px 24px #b39ddb18;
+    z-index: 100;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0;
   }
-   #main-content {
-    margin-left: 60px; /* collapsed sidebar width */
-    margin-right: 0;
+  #sticky-sidebar .sidebar-top,
+  #sticky-sidebar .sidebar-bottom {
+    display: none;
   }
-  #sticky-sidebar.expanded ~ #main-content {
-    margin-left: 200px; /* expanded sidebar width */
+  #sticky-sidebar .sidebar-nav {
+    width: 100vw;
+    padding: 0;
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    overflow: visible;
+  }
+  #sticky-sidebar .sidebar-nav ul {
+    display: flex;
+    width: 100vw;
+    justify-content: space-around;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+  }
+  #sticky-sidebar .sidebar-nav li {
+    margin: 0;
+    flex: 1 1 0;
+    text-align: center;
+  }
+  #sticky-sidebar .sidebar-link .sidebar-label {
+    display: none;
+  }
+  #main-content {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    margin-bottom: 60px; /* To not overlap the fixed nav */
+  }
+  #sidebar-hamburger,
+  #sidebar-close {
+    display: none;
   }
 }
-
-/* Main content area */
-#main-content {
-  transition: margin-right 0.22s, margin-left 0.22s;
-  padding: 2rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  background: var(--color-bg);
-}
-
 /* SECTION LAYOUTS */
 .page-section {
   display: flex;
