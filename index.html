@@ -280,9 +280,18 @@
   <div class="calendar-grid-container">
     <table class="calendar-grid" aria-label="Monthly calendar" tabindex="0"></table>
   </div>
-  <!-- Inline/Modal day panel will open here when a bubble is clicked -->
-  <div id="calendar-day-panel" class="calendar-day-panel" hidden></div>
-          
+
+      <div id="calendar-day-panel" class="calendar-day-panel" hidden>
+  <div class="cdp-header">
+    <span id="cdp-date-label"></span>
+    <button class="cdp-close" aria-label="Close">&times;</button>
+  </div>
+  <div class="cdp-content-list"></div>
+  <div class="cdp-actions">
+    <button class="cdp-add-task">Add Task</button>
+    <button class="cdp-add-content">Add Content</button>
+  </div>
+</div>    
 <div id="calendar-modal" class="calendar-modal" hidden>
   <div class="calendar-modal-content">
     <button class="calendar-modal-close" aria-label="Close">&times;</button>
