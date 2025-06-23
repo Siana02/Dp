@@ -4,7 +4,8 @@
 
 // ---- Section Navigation ----
 const sidebar = document.getElementById('sidebar');
-const sections = document.querySelectorAll('.page-section');
+// Only tabbed sections, NOT 'projects-overview' or 'calendar'
+const sections = document.querySelectorAll('.page-section:not(#projects-overview):not(#calendar)');
 const sidebarButtons = sidebar.querySelectorAll('button[data-section]');
 let currentSectionId = 'dashboard';
 function showSection(id) {
