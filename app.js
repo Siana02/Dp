@@ -608,7 +608,8 @@ else {
   lucideScript.onload = () => lucide.createIcons();
   document.head.appendChild(lucideScript);
 }
-// === Today’s Tasks Section Logic ===
+
+//=== Today’s Tasks Section Logic ===
 
 // --- Utility Functions ---
 function isToday(dateStr) {
