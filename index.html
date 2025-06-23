@@ -12,61 +12,42 @@
   <!-- Assume CSS resets and theme styles will be included later -->
 </head>
 <body>
-  <!-- Theme/Mode Switcher and Layout Dragger (fixed/floating for global access) -->
-  <div id="ui-controls">
-    <button id="theme-switcher" aria-label="Switch Theme"></button>
-    <button id="layout-dragger" aria-label="Change Layout"></button>
-  </div>
-  <div id="app-container">
-    <!-- Sidebar / Tab Nav -->
-    <!-- Sticky Sidebar -->
-<aside id="sticky-sidebar" class="sidebar pastel">
+  <aside id="sticky-sidebar" class="sidebar collapsed">
   <div class="sidebar-top">
-    <button id="sidebar-hamburger" class="sidebar-hamburger" aria-label="Open navigation">
+    <button id="sidebar-hamburger" class="sidebar-hamburger" aria-label="Expand navigation">
       <i data-lucide="menu"></i>
     </button>
-    <span class="sidebar-logo" aria-label="Digital Planner">DP</span>
-    <button id="sidebar-close" class="sidebar-close" aria-label="Close navigation">
+    <button id="sidebar-close" class="sidebar-close" aria-label="Collapse navigation">
       <i data-lucide="x"></i>
     </button>
   </div>
   <nav class="sidebar-nav" aria-label="Section navigation">
     <ul>
       <li>
-        <a href="#dashboard" class="sidebar-link" data-section="dashboard" tabindex="0">
+        <a href="#dashboard" class="sidebar-link" data-section="dashboard" title="Dashboard" tabindex="0">
           <span class="sidebar-icon"><i data-lucide="bar-chart-3"></i></span>
           <span class="sidebar-label">Dashboard</span>
-          <span class="sidebar-badge" id="notif-dashboard" hidden></span>
         </a>
       </li>
       <li>
-        <a href="#projects-overview" class="sidebar-link" data-section="projects-overview" tabindex="0">
+        <a href="#projects-overview" class="sidebar-link" data-section="projects-overview" title="Projects" tabindex="0">
           <span class="sidebar-icon"><i data-lucide="folder"></i></span>
           <span class="sidebar-label">Projects</span>
-          <span class="sidebar-badge" id="notif-projects" hidden></span>
         </a>
       </li>
       <li>
-        <a href="#calendar" class="sidebar-link" data-section="calendar" tabindex="0">
+        <a href="#calendar" class="sidebar-link" data-section="calendar" title="Calendar" tabindex="0">
           <span class="sidebar-icon"><i data-lucide="calendar"></i></span>
           <span class="sidebar-label">Calendar</span>
-          <span class="sidebar-badge" id="notif-calendar" hidden></span>
         </a>
       </li>
     </ul>
   </nav>
   <div class="sidebar-bottom">
     <button id="sidebar-theme" class="sidebar-action" aria-label="Switch theme">
+      <span class="theme-indicator" id="theme-indicator" title="Theme"></span>
       <i data-lucide="moon-star"></i>
     </button>
-    <button id="sidebar-settings" class="sidebar-action" aria-label="Settings">
-      <i data-lucide="settings"></i>
-    </button>
-    <div class="sidebar-avatar" tabindex="0" title="Your Profile">
-      <img src="profile.jpg" alt="Profile" />
-      <!-- Optional notification dot -->
-      <span class="avatar-badge" id="avatar-badge" hidden></span>
-    </div>
   </div>
 </aside>
     <!-- Main Content Area -->
