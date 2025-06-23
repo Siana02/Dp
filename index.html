@@ -246,8 +246,23 @@
     
 
 <!-- Calendar Add/Edit Modal -->
-      <section id="calendar" class="page-section" aria-labelledby="calendar-title">
-<div id="calendar-modal" class="calendar-modal">
+      
+        <section id="calendar" class="page-section" aria-labelledby="calendar-title">
+  <header>
+    <h1 id="calendar-title">Content & Task Calendar</h1>
+    <div class="calendar-controls">
+      <button id="calendar-prev" aria-label="Previous Month"><i data-lucide="chevron-left"></i></button>
+      <span id="calendar-month-label"></span>
+      <button id="calendar-next" aria-label="Next Month"><i data-lucide="chevron-right"></i></button>
+    </div>
+  </header>
+  <div class="calendar-grid-container">
+    <table class="calendar-grid" aria-label="Monthly calendar" tabindex="0"></table>
+  </div>
+  <!-- Inline/Modal day panel will open here when a bubble is clicked -->
+  <div id="calendar-day-panel" class="calendar-day-panel" hidden></div>
+          
+<div id="calendar-modal" class="calendar-modal" hidden>
   <div class="calendar-modal-content">
     <button class="calendar-modal-close" aria-label="Close">&times;</button>
     <h3 id="calendar-modal-title">Add New Item</h3>
