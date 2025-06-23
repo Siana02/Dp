@@ -102,7 +102,30 @@ document.addEventListener("DOMContentLoaded", function() {
   // Lucide icons initialization
   if (window.lucide) lucide.createIcons();
 });
-
+// Theme switcher for mobile nav
+const mobileThemeBtn = document.getElementById('sidebar-theme-mobile');
+const mobileThemeIndicator = document.getElementById('theme-indicator-mobile');
+if (mobileThemeBtn && mobileThemeIndicator) {
+  function applyMobileTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    document.body.setAttribute('data-theme', theme);
+    if (window.localStorage) localStorage.setItem('theme', theme);
+    const t = [{ name: 'pastel', icon: '🌸' }, { name: 'dark', icon: '🌙' }, { name: 'light', icon: '🌞' }]
+      .find(t => t.name === theme) || { name: 'pastel', icon: '🌸' };
+    mobileThemeIndicator.textContent = t.icon;
+    mobileThemeIndicator.setAttribute('aria-label', t.name.charAt(0).toUpperCase() + t.name.slice(1) + " theme");
+  }
+  mobileThemeBtn.onclick = () => {
+    let cur = document.documentElement.getAttribute('data-theme') || document.body.getAttribute('data-theme') || 'pastel';
+    let themes = ['pastel', 'dark', 'light'];
+    let idx = themes.indexOf(cur);
+    let nextTheme = themes[(idx + 1) % themes.length];
+    applyMobileTheme(nextTheme);
+  };
+  // Set initial indicator
+  const saved = window.localStorage ? localStorage.getItem('theme') : null;
+  applyMobileTheme(saved || 'pastel');
+}
 // ---- Local Storage Save/Load for MVP ----
 function saveData(key, data) {
   try {
