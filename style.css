@@ -935,12 +935,13 @@ html, body {
   padding: 0;
   width: 100%;
   min-height: 5em;
-  background: transparent;
+  animation: slideInBottom 0.38s;
   display: flex;
   flex-direction: column;
   gap: 1.1em; /* space between task cards */
   /* Optional for a subtle highlight of the entire list area: */
-  background: #f6fafd; border-radius: 1em; 
+   background: var(--color-collapsible-bg);
+  border-radius: 1em; 
   transition: background 0.18s;
 }
 
@@ -952,7 +953,7 @@ html, body {
     margin-left: auto;
     margin-right: auto;
     /* Optional: a subtle card-style background for the list area */
-     background: #f3f7fd; border-radius: 1.3em; padding: 0.7em 0; 
+    
   }
 }
 /*.todays-tasks-list {
