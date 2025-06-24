@@ -874,13 +874,7 @@ html, body {
   position: relative;
   min-width: 0;
 }
-.todays-tasks-card {
-  position: relative;
-  min-height: 7em; /* ensure space for actions at bottom */
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-}
+
 .todays-tasks-actions {
   position: absolute;
   left: 0; right: 0; bottom: 0;
@@ -906,7 +900,7 @@ html, body {
   padding: 0.18em 0.7em;
   border-radius: 0.6em;
   transition: background 0.18s;
-  color: #22395d;                /* strong readable, not too dark */
+  color: #E1BEE7;                /* strong readable, not too dark */
   display: inline-block;
   font-size: 1.3rem;
   font-weight: 700;
@@ -950,7 +944,15 @@ html, body {
   min-height: 120px;
   overflow-y: auto;
   position: relative;
-  background: #E1BEE7;
+}
+.todays-tasks-card {
+  position: relative;
+  min-height: 7em; /* ensure space for actions at bottom */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+   background: #E1BEE7;
+  colour: #f5f8fd;
 }
 /* General list styling */
 #todays-tasks-list {
@@ -964,7 +966,7 @@ html, body {
   flex-direction: column;
   gap: 1.1em; /* space between task cards */
   /* Optional for a subtle highlight of the entire list area: */
-   background: var(--color-collapsible-bg);
+   background: #E1BEE7;
   border-radius: 1em; 
   transition: background 0.18s;
 }
