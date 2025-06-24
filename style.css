@@ -879,10 +879,15 @@ html, body {
 }
 
 #todays-tasks-title {
+  background: #f5f8fd;           /* soft, gentle blue highlight */
+  padding: 0.18em 0.7em;
+  border-radius: 0.6em;
+  transition: background 0.18s;
+  color: #22395d;                /* strong readable, not too dark */
+  display: inline-block;
   font-size: 1.3rem;
   font-weight: 700;
-  font-family: 'Quicksand', 'Playfair Display', Arial, sans-serif;
-  color: var(--color-accent);
+  font-family: 'Quicksand', 'Playfair Display', Arial, sans-serif,
   margin: 0;
 }
 
@@ -1075,6 +1080,28 @@ html, body {
 .bubble-checkbox i, .task-trash i {
   font-size: 1.2em;
   pointer-events: none;
+}
+/* Desktop-only adjustments */
+@media (min-width: 700px) {
+  .todays-tasks-title {
+    font-size: 1.28em;           /* make title bigger on desktop */
+    background: #e8f0fe;         /* slightly more visible on desktop */
+    padding: 0.22em 1.1em;
+  }
+  .todays-tasks-card {
+    max-width: 520px;            /* reduce card width for a compact look */
+    padding: 0.9em 1.2em 2.2em 1.2em; /* more compact desktop padding */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Optional: Slightly tighter card for desktop, if you want */
+@media (min-width: 1100px) {
+  .todays-tasks-card {
+    max-width: 430px;
+    padding: 0.7em 1em 2em 1em;
+  }
 }
 /* Responsive adjustments for mobile */
 @media (max-width: 600px) {
