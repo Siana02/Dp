@@ -58,7 +58,9 @@
 
 html, body {
   overflow-x: hidden;
-  height: 100%;
+  overflow-y: auto;  
+  min-height: 100%;
+  height: auto;
   margin: 0;
   padding: 0;
   font-family: var(--font-base);
@@ -93,6 +95,7 @@ html, body {
   left: 0;
   right: unset;
   height: 100vh;
+  overflow-y: auto;
   width: var(--sidebar-width-collapsed);
   background: var(--pastel-bg);
   box-shadow: 0 2px 24px #b39ddb18;
@@ -848,6 +851,24 @@ html, body {
   position: relative;
   min-width: 0;
 }
+.todays-tasks-card {
+  position: relative;
+  min-height: 7em; /* ensure space for actions at bottom */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.todays-tasks-actions {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 1.2em 0.4em 1.2em;
+  gap: 2em; /* controls space between icons */
+  z-index: 2;
+}
 
 .todays-tasks-header {
   display: flex;
@@ -989,26 +1010,38 @@ html, body {
 }
 
 /* Bubble Checkbox */
+.bubble-checkbox, .task-trash {
+  width: 2.5em;
+  height: 2.5em;
+  font-size: 1.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .bubble-checkbox {
+   order: 2; /* green checkmark on right */
+  margin: 0; /* override previous margin-right */
+  color: #388e3c;
+  transition: border-color 0.18s, background 0.18s, color 0.16s;
   width: 1.7em; height: 1.7em;
   border-radius: 50%;
   border: 2px solid #bdbdbd;
   background: #fff;
   margin-right: 1.4em;
   display: flex; align-items: center; justify-content: center;
-  transition: border-color 0.18s, background 0.18s;
   cursor: pointer;
   flex-shrink: 0;
   position: relative;
 }
 .bubble-checkbox.checked {
-  border-color: #66bb6a;
-  background: #e8f5e9;
+  border-color: #43a047;
+  background: #a5d6a7;
+  color: #fff;
 }
 .bubble-checkbox .bubble-checkmark {
   opacity: 0;
-  font-size: 1.25em;
-  color: #388e3c;
+  font-size: 1.3em;
+  color: inherit;
   font-weight: bold;
   transition: opacity 0.2s;
 }
@@ -1016,24 +1049,43 @@ html, body {
   opacity: 1;
 }
 
-/* Trash Icon */
-.task-trash {
-  margin-left: 1em;
-  font-size: 1.22em;
-  color: #ec407a;
-  background: none;
-  border: none;
-  border-radius: 50%;
-  padding: 0.3em;
-  cursor: pointer;
-  transition: background 0.17s;
-  flex-shrink: 0;
-}
-.task-trash:hover, .task-trash:focus {
-  background: #f8bbd0;
+.bubble-checkbox:focus, .bubble-checkbox:hover {
+  border-color: #388e3c;
+  background: #c8e6c9;
   color: #fff;
 }
 
+/* Trash Icon */
+.task-trash {
+  order: 1; /* red trash on left */
+  margin: 0;
+  color: #c62828;
+  background: #ffcdd2;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  transition: background 0.15s, color 0.15s;
+}
+.task-trash:hover, .task-trash:focus {
+  background: #e57373;
+  color: #fff;
+}
+
+/* Make sure the icons inside scale up */
+.bubble-checkbox i, .task-trash i {
+  font-size: 1.2em;
+  pointer-events: none;
+}
+/* Responsive adjustments for mobile */
+@media (max-width: 600px) {
+  .todays-tasks-card {
+    min-height: 6em;
+  }
+  .todays-tasks-actions {
+    padding: 0 0.7em 0.3em 0.7em;
+    gap: 1.2em;
+  }
+}
 /* Hide FAB when modal is open */
 .todays-fab.hide { display: none !important; }
 .todays-fab {
