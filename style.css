@@ -491,7 +491,7 @@ html, body {
 }
 .topbar-right {
    order: 2;
-  background: #f3f3f3; /* Default color, change as you wish */
+  background: #DCE3F1; /* Default color, change as you wish */
   padding: 0.4em 0.8em;
   border-radius: 1em;
   flex: 1 1 50%;
