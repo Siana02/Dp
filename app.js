@@ -704,87 +704,79 @@ function renderTodaysTasks() {
   list.innerHTML = "";
   let tasksRendered = 0;
 
-  // Helper to render a task card
-  function renderCard(task) {
-    const li = document.createElement('li');
-    li.className = "todays-tasks-card" + (task.status === "completed" ? " completed" : "");
-    li.tabIndex = 0;
-    // Bookmark
-    const color = importanceToColor(task.importance);
-    const importanceLabel =
-      task.importance === "high" ? "High importance"
-      : task.importance === "medium" ? "Medium importance"
-      : "Easy importance";
-    li.innerHTML = `
-   li.innerHTML = `
-  <div class="bookmark ${color}" title="${importanceLabel}" aria-label="${importanceLabel} task"></div>
-  <div class="card-content">
-    <div class="todays-tasks-title">${task.title}</div>
-    <div class="todays-tasks-tags">
-      <span class="todays-tasks-tag" tabindex="0" aria-label="Filter by project ${task.project}" style="background:${projectColor(task.project)};color:#fff;">${task.project}</span>
+ function renderCard(task) {
+  const li = document.createElement('li');
+  li.className = "todays-tasks-card" + (task.status === "completed" ? " completed" : "");
+  li.tabIndex = 0;
+  const color = importanceToColor(task.importance);
+  const importanceLabel = 
+    task.importance === "high" ? "High importance" :
+    task.importance === "medium" ? "Medium importance" :
+    "Easy importance";
+  li.innerHTML = `
+    <div class="bookmark ${color}" title="${importanceLabel}" aria-label="${importanceLabel} task"></div>
+    <div class="card-content">
+      <div class="todays-tasks-title">${task.title}</div>
+      <div class="todays-tasks-tags">
+        <span class="todays-tasks-tag" tabindex="0" aria-label="Filter by project ${task.project}" style="background:${projectColor(task.project)};color:#fff;">${task.project}</span>
+      </div>
     </div>
-  </div>
-  <div class="todays-tasks-actions">
-    <div class="todays-tasks-checkbox${task.status === "completed" ? " checked" : ""}" tabindex="0" role="checkbox" aria-checked="${task.status === "completed" ? "true" : "false"}" aria-label="Mark task ${
-      task.status === "completed" ? "incomplete" : "complete"
-    }">
-      <span class="checkmark"><i data-lucide="check"></i></span>
+    <div class="todays-tasks-actions">
+      <div class="todays-tasks-checkbox${task.status === "completed" ? " checked" : ""}" tabindex="0" role="checkbox" aria-checked="${task.status === "completed" ? "true" : "false"}" aria-label="Mark task ${
+        task.status === "completed" ? "incomplete" : "complete"
+      }">
+        <span class="checkmark"><i data-lucide="check"></i></span>
+      </div>
+      <button class="todays-tasks-trash" aria-label="Delete task"><i data-lucide="trash-2"></i></button>
     </div>
-    <button class="todays-tasks-trash" aria-label="Delete task"><i data-lucide="trash-2"></i></button>
-  </div>
-';   
-// After setting li.innerHTML...
-const actions = li.querySelector('.todays-tasks-actions');
-const checkbox = actions.querySelector('.todays-tasks-checkbox');
-const trash = actions.querySelector('.todays-tasks-trash');
-
-function toggleComplete(ev) {
-  ev.stopPropagation();
-  const tasks = loadTasks();
-  const idx = tasks.findIndex(t => t.id === task.id);
-  if (idx >= 0) {
-    tasks[idx].status = tasks[idx].status === "completed" ? "pending" : "completed";
-    saveTasks(tasks);
-    renderTodaysTasks();
-    renderRemindersAndPerformance?.();
-  }
-}
-
-if (checkbox) {
-  checkbox.addEventListener('click', toggleComplete);
-  checkbox.addEventListener('keypress', e => {
-    if (e.key === "Enter" || e.key === " ") toggleComplete(e);
-  });
-}
-
-if (trash) {
-  trash.onclick = ev => {
+  `;
+  const actions = li.querySelector('.todays-tasks-actions');
+  const checkbox = actions.querySelector('.todays-tasks-checkbox');
+  const trash = actions.querySelector('.todays-tasks-trash');
+  function toggleComplete(ev) {
     ev.stopPropagation();
-    deleteTask(task.id, li);
-  };
-}
-  
-    // Card click for edit
-    li.addEventListener('click', (e) => {
-      if (
-        !e.target.classList.contains('todays-tasks-checkbox') &&
-        !e.target.closest('.todays-tasks-checkbox') &&
-        !e.target.classList.contains('todays-tasks-trash') &&
-        !e.target.closest('.todays-tasks-trash')
-      ) {
-        openTaskModal(task.id);
-      }
-    });
-    // Project tag filter
-    const tag = li.querySelector('.todays-tasks-tag');
-    tag.onclick = e => {
-      e.stopPropagation();
-      setProjectFilter(task.project);
-    };
-    tag.onkeypress = e => { if (e.key === "Enter" || e.key === " ") setProjectFilter(task.project); };
-    list.appendChild(li);
-    tasksRendered++;
+    const tasks = loadTasks();
+    const idx = tasks.findIndex(t => t.id === task.id);
+    if (idx >= 0) {
+      tasks[idx].status = tasks[idx].status === "completed" ? "pending" : "completed";
+      saveTasks(tasks);
+      renderTodaysTasks();
+      renderRemindersAndPerformance?.();
+    }
   }
+  if (checkbox) {
+    checkbox.addEventListener('click', toggleComplete);
+    checkbox.addEventListener('keypress', e => {
+      if (e.key === "Enter" || e.key === " ") toggleComplete(e);
+    });
+  }
+  if (trash) {
+    trash.onclick = ev => {
+      ev.stopPropagation();
+      deleteTask(task.id, li);
+    };
+  }
+  // Card click for edit
+  li.addEventListener('click', (e) => {
+    if (
+      !e.target.classList.contains('todays-tasks-checkbox') &&
+      !e.target.closest('.todays-tasks-checkbox') &&
+      !e.target.classList.contains('todays-tasks-trash') &&
+      !e.target.closest('.todays-tasks-trash')
+    ) {
+      openTaskModal(task.id);
+    }
+  });
+  // Project tag filter
+  const tag = li.querySelector('.todays-tasks-tag');
+  tag.onclick = e => {
+    e.stopPropagation();
+    setProjectFilter(task.project);
+  };
+  tag.onkeypress = e => { if (e.key === "Enter" || e.key === " ") setProjectFilter(task.project); };
+  list.appendChild(li);
+  tasksRendered++;
+}
 
   pending.forEach(renderCard);
   completed.forEach(renderCard);
