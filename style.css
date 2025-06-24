@@ -491,7 +491,7 @@ html, body {
 }
 .topbar-right {
    order: 2;
-  background: #DCE3F1; /* Default color, change as you wish */
+  background: #000; /* Default color, change as you wish */
   padding: 0.4em 0.8em;
   border-radius: 1em;
   flex: 1 1 50%;
@@ -555,7 +555,7 @@ html, body {
   }
  .topbar-right {
     margin-left: auto;
-    background: #ffe0b2; /* Different color for mobile */
+    background: #0b1957; /* Different color for mobile */
     color: #1a237e; /* Example text color */
   }
   .greeting {
