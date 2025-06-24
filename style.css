@@ -820,8 +820,20 @@ html, body {
     padding: 1rem;
     font-size: 0.95rem;
   }
+   .reminders-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8em;
+  }
   .reminders-lead {
     display: none !important;
+  }
+   .reminders-pending,
+  .reminders-dots {
+    display: flex;
+    align-items: center;
+    margin: 0; /* Remove any vertical margin that could break alignment */
   }
   .performance-bar-outer { height: 12px;}
   
