@@ -952,7 +952,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-   background: #E1BEE7;
+   background: #000;
   color: #191919; 
   border-radius: 1.1em;
   box-shadow: 0 2px 12px #0002;
