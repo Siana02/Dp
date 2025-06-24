@@ -716,46 +716,54 @@ function renderTodaysTasks() {
       : task.importance === "medium" ? "Medium importance"
       : "Easy importance";
     li.innerHTML = `
-      <div class="bookmark ${color}" title="${importanceLabel}" aria-label="${importanceLabel} task"></div>
-      <div class="todays-tasks-checkbox${task.status === "completed" ? " checked" : ""}" tabindex="0" role="checkbox" aria-checked="${task.status === "completed" ? "true" : "false"}" aria-label="Mark task ${
-        task.status === "completed" ? "incomplete" : "complete"
-      }">
-        <span class="checkmark"><i data-lucide="check"></i></span>
-      </div>
-      <div class="card-content">
-        <div class="todays-tasks-title">${task.title}</div>
-        <div class="todays-tasks-tags">
-          <span class="todays-tasks-tag" tabindex="0" aria-label="Filter by project ${task.project}" style="background:${projectColor(task.project)};color:#fff;">${task.project}</span>
-        </div>
-      </div>
-      <div class="todays-tasks-actions">
-        <button class="todays-tasks-trash" aria-label="Delete task"><i data-lucide="trash-2"></i></button>
-      </div>
-    `;
-    // Checkbox
-    const checkbox = li.querySelector('.todays-tasks-checkbox');
-    function toggleComplete(ev) {
-      ev.stopPropagation();
-      const tasks = loadTasks();
-      const idx = tasks.findIndex(t => t.id === task.id);
-      if (idx >= 0) {
-        tasks[idx].status = tasks[idx].status === "completed" ? "pending" : "completed";
-        saveTasks(tasks);
-        renderTodaysTasks();
-        renderRemindersAndPerformance?.();
-      }
-    }
-    checkbox.addEventListener('click', toggleComplete);
-    checkbox.addEventListener('keypress', e => { if (e.key === "Enter" || e.key === " ") toggleComplete(e); });
-    // Tooltip for completed
-    if (task.status === "completed") {
-      checkbox.title = "Mark as incomplete";
-    }
-    // Trash
-    li.querySelector('.todays-tasks-trash').onclick = ev => {
-      ev.stopPropagation();
-      deleteTask(task.id, li);
-    };
+   li.innerHTML = `
+  <div class="bookmark ${color}" title="${importanceLabel}" aria-label="${importanceLabel} task"></div>
+  <div class="card-content">
+    <div class="todays-tasks-title">${task.title}</div>
+    <div class="todays-tasks-tags">
+      <span class="todays-tasks-tag" tabindex="0" aria-label="Filter by project ${task.project}" style="background:${projectColor(task.project)};color:#fff;">${task.project}</span>
+    </div>
+  </div>
+  <div class="todays-tasks-actions">
+    <div class="todays-tasks-checkbox${task.status === "completed" ? " checked" : ""}" tabindex="0" role="checkbox" aria-checked="${task.status === "completed" ? "true" : "false"}" aria-label="Mark task ${
+      task.status === "completed" ? "incomplete" : "complete"
+    }">
+      <span class="checkmark"><i data-lucide="check"></i></span>
+    </div>
+    <button class="todays-tasks-trash" aria-label="Delete task"><i data-lucide="trash-2"></i></button>
+  </div>
+';   
+// After setting li.innerHTML...
+const actions = li.querySelector('.todays-tasks-actions');
+const checkbox = actions.querySelector('.todays-tasks-checkbox');
+const trash = actions.querySelector('.todays-tasks-trash');
+
+function toggleComplete(ev) {
+  ev.stopPropagation();
+  const tasks = loadTasks();
+  const idx = tasks.findIndex(t => t.id === task.id);
+  if (idx >= 0) {
+    tasks[idx].status = tasks[idx].status === "completed" ? "pending" : "completed";
+    saveTasks(tasks);
+    renderTodaysTasks();
+    renderRemindersAndPerformance?.();
+  }
+}
+
+if (checkbox) {
+  checkbox.addEventListener('click', toggleComplete);
+  checkbox.addEventListener('keypress', e => {
+    if (e.key === "Enter" || e.key === " ") toggleComplete(e);
+  });
+}
+
+if (trash) {
+  trash.onclick = ev => {
+    ev.stopPropagation();
+    deleteTask(task.id, li);
+  };
+}
+  
     // Card click for edit
     li.addEventListener('click', (e) => {
       if (
