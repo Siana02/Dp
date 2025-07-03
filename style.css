@@ -824,6 +824,37 @@ html, body {
   border-radius: 1em;
 }
 
+/* 🌐 Large Monitors */
+@media (min-width: 1281px) {
+  .reminders-deadlines-split {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    max-width: 1400px;
+    margin: 0 auto;
+    gap: 2rem;
+  }
+  .reminders-left, .reminders-right {
+    flex: 1;
+    padding: 2rem;
+  }
+}
+
+/* 💻 Small Laptops */
+@media (min-width: 901px) and (max-width: 1280px) {
+  .reminders-deadlines-split {
+    display: flex;
+    flex-direction: row;
+    gap: 1.5rem;
+    padding: 1rem;
+  }
+  .reminders-left, .reminders-right {
+    width: 50%;
+    padding: 1.2rem;
+  }
+}
+
+/* 📱 Mobile & Tablets */
 @media (max-width: 900px) {
   .reminders-deadlines-split {
     flex-direction: column;
