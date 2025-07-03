@@ -286,7 +286,14 @@ const mockTasks = [
   }
   // ... more sample tasks
 ];
-
+function showSoftAlert(msg) {
+  let alert = document.getElementById('soft-alert');
+  if (!alert) return;
+  alert.textContent = msg;
+  alert.hidden = false;
+  alert.style.display = 'block';
+  setTimeout(() => { alert.style.display = 'none'; alert.hidden = true; }, 4000);
+}
 function loadTasks() {
   return JSON.parse(localStorage.getItem('tasks') || 'null') || mockTasks;
 }
@@ -436,6 +443,12 @@ toggleBtn.addEventListener('click', () => {
   toggleBtn.setAttribute('aria-pressed', showPast ? 'true' : 'false');
   toggleBtn.querySelector('.toggle-label').textContent = showPast ? "Show Current Tasks" : "Show Past Tasks";
   renderRemindersAndPerformance();
+  // After rendering overdue (pending) tasks
+const badge = document.getElementById('pending-badge');
+if (badge) badge.textContent = overdue.length > 0 ? overdue.length : '';
+  if (overdue.length > 0) {
+  showSoftAlert(`You have ${overdue.length} unfinished tasks from previous days → check reminders`);
+}
 });
 
 // --- Archive Task Logic ---
