@@ -824,48 +824,60 @@ html, body {
   border-radius: 1em;
 }
 
-/* 🌐 Large Monitors */
-@media (min-width: 1281px) {
-  .reminders-deadlines-split {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    max-width: 1400px;
-    margin: 0 auto;
-    gap: 2rem;
-  }
-  .reminders-left, .reminders-right {
-    flex: 1;
-    padding: 2rem;
-  }
+/* Reset + Flex Utility */
+.reminders-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
 }
 
-/* 💻 Small Laptops */
+.reminders-meta {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Default: Mobile First (stacked layout) */
+.reminders-deadlines-split {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+/* 💻 Small Laptops: 901px to 1280px */
 @media (min-width: 901px) and (max-width: 1280px) {
   .reminders-deadlines-split {
-    display: flex;
-    flex-direction: row;
-    gap: 1.5rem;
-    padding: 1rem;
+    padding: 1.5rem 2rem;
+    max-width: 1000px;
+    margin: 0 auto;
   }
+
   .reminders-left, .reminders-right {
-    width: 50%;
-    padding: 1.2rem;
+    width: 100%;
   }
 }
 
-/* 📱 Mobile & Tablets */
-@media (max-width: 900px) {
+/* 🖥️ Large Monitors: 1281px and up */
+@media (min-width: 1281px) {
   .reminders-deadlines-split {
-    flex-direction: column;
-    gap: 1.5rem;
+    padding: 2rem 3rem;
+    max-width: 1400px;
+    margin: 0 auto;
   }
+
   .reminders-left, .reminders-right {
     width: 100%;
-    min-width: 0;
-    padding: 1rem 1rem 1.2rem 1rem;
+  }
+
+  .reminders-header-row {
+    margin-bottom: 2rem;
   }
 }
+
+
 @media (max-width: 600px) {
   .reminders-deadlines-split {
     flex-direction: column;
